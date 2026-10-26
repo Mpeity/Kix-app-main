@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CartView: View {
-    @StateObject private var cartManager = CartManager()
+    @EnvironmentObject private var cartManager: CartManager
     @StateObject private var paymentManager = PaymentManager()
     @State private var showCheckoutAlert = false
     @State private var showAddCardSheet = false

@@ -3,7 +3,12 @@ import SwiftUI
 struct ProductDetailView: View {
     @State private var isFavorite: Bool
     @State private var showAddedToCart: Bool = false
+    @State private var showAddResultAlert: Bool = false
+    @State private var addResultMessage: String = ""
     let product: Product
+    @EnvironmentObject private var cartManager: CartManager
+    @EnvironmentObject private var tabSelection: TabSelection
+    @Environment(\.dismiss) private var dismiss
     
     private let brandGradient = LinearGradient(colors: [.purple, .blue], startPoint: .leading, endPoint: .trailing)
     
@@ -46,8 +51,12 @@ struct ProductDetailView: View {
                 HStack {
                     Spacer()
                     Button(action: {
-                        showAddedToCart = true
-                        // TODO: 添加购物车逻辑
+                        cartManager.addToCart(product: product)
+                        addResultMessage = "已成功将「\(product.name)」加入购物车！"
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showAddedToCart = true
+                        }
+                        showAddResultAlert = true
                     }) {
                         Label("加入购物车", systemImage: "cart.badge.plus")
                             .font(.system(size: 16, weight: .semibold, design: .rounded))
@@ -90,9 +99,24 @@ struct ProductDetailView: View {
         .background(Color.backgroundPrimary)
         .navigationTitle(product.name)
         .navigationBarTitleDisplayMode(.inline)
+        .alert("提示", isPresented: $showAddResultAlert) {
+            HStack {
+                Button("继续购物", role: .cancel) {
+                    dismiss()
+                }
+                Button("查看购物车") {
+                    tabSelection.selectedTab = 4
+                    dismiss()
+                }
+            }
+        } message: {
+            Text(addResultMessage)
+        }
     }
 }
 
 #Preview {
     ProductDetailView(product: MockData.products.first!)
+        .environmentObject(CartManager())
+        .environmentObject(TabSelection())
 }

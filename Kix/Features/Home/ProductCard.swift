@@ -3,6 +3,7 @@ import SwiftUI
 struct ProductCard: View {
     let product: Product
     @EnvironmentObject private var favoritesManager: FavoritesManager
+    @EnvironmentObject private var cartManager: CartManager
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -53,7 +54,7 @@ struct ProductCard: View {
                     .bold()
                 Spacer()
                 Button(action: {
-                    // TODO: 添加购物车逻辑
+                    cartManager.addToCart(product: product)
                 }) {
                     Image(systemName: "cart.badge.plus")
                         .foregroundColor(.accentGreen)

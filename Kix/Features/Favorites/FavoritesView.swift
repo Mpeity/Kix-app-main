@@ -2,6 +2,8 @@ import SwiftUI
 
 struct FavoritesView: View {
     @EnvironmentObject var favoritesManager: FavoritesManager
+    @EnvironmentObject var cartManager: CartManager
+    @EnvironmentObject var tabSelection: TabSelection
     @State private var selectedProduct: Product? = nil
     
     var body: some View {
@@ -82,6 +84,8 @@ struct FavoritesView: View {
                 NavigationView {
                     ProductDetailView(product: product)
                         .environmentObject(favoritesManager)
+                        .environmentObject(cartManager)
+                        .environmentObject(tabSelection)
                 }
             }
         }
@@ -91,4 +95,6 @@ struct FavoritesView: View {
 #Preview {
     FavoritesView()
         .environmentObject(FavoritesManager())
+        .environmentObject(CartManager())
+        .environmentObject(TabSelection())
 }

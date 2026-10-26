@@ -13,6 +13,8 @@ struct MainTabView: View {
         TabView(selection: $tabSelection.selectedTab) {
             HomeView()
                 .environmentObject(appState.favoritesManager)
+                .environmentObject(appState.cartManager)
+                .environmentObject(tabSelection)
                 .tabItem {
                     Label("首页", systemImage: tabSelection.selectedTab == 0 ? "house.fill" : "house")
                 }
@@ -29,6 +31,8 @@ struct MainTabView: View {
             
             FavoritesView()
                 .environmentObject(appState.favoritesManager)
+                .environmentObject(appState.cartManager)
+                .environmentObject(tabSelection)
                 .tabItem {
                     Label("收藏", systemImage: tabSelection.selectedTab == 2 ? "heart.fill" : "heart")
                 }
@@ -43,6 +47,7 @@ struct MainTabView: View {
                 .accessibilityIdentifier("tab_menu")
             
             CartView()
+                .environmentObject(appState.cartManager)
                 .tabItem {
                     Label("购物车", systemImage: tabSelection.selectedTab == 4 ? "cart.fill" : "cart")
                 }

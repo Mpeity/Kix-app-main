@@ -3,6 +3,7 @@ import SwiftUI
 struct HomeView: View {
     @State private var products: [Product] = MockData.products
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var tabSelection: TabSelection
     // 品牌渐变（紫色 → 蓝色），卡片中带有微妙的绿色点缀
     let brandGradient = LinearGradient(colors: [.purple, .blue], startPoint: .leading, endPoint: .trailing)
     
@@ -59,6 +60,8 @@ struct HomeView: View {
                                 .padding(.horizontal)
                                 .accessibilityIdentifier("home_product_card_\(product.id.uuidString)")
                                 .environmentObject(appState.favoritesManager)
+                                .environmentObject(appState.cartManager)
+                                .environmentObject(tabSelection)
                             }
                         }
                         .padding(.top, 10)
@@ -139,6 +142,8 @@ struct NewProductCard: View {
     var onDelete: () -> Void
 
     @EnvironmentObject private var favoritesManager: FavoritesManager
+    @EnvironmentObject private var cartManager: CartManager
+    @EnvironmentObject private var tabSelection: TabSelection
 
     @State private var isPressed = false
     @State private var showMenu = false
@@ -249,6 +254,7 @@ struct NewProductCard: View {
             withAnimation(.easeInOut(duration: 0.1)) { isPressed = true }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 withAnimation(.easeInOut(duration: 0.1)) { isPressed = false }
+                showDetail = true
             }
         }
         .confirmationDialog("操作", isPresented: $showMenu, titleVisibility: .automatic) {
@@ -265,6 +271,8 @@ struct NewProductCard: View {
         }
         .sheet(isPresented: $showDetail) {
             ProductDetailView(product: product)
+                .environmentObject(cartManager)
+                .environmentObject(tabSelection)
         }
         .sheet(isPresented: $showEditSheet) {
             EditProductSheet(original: product) { updated in
@@ -337,4 +345,7 @@ private struct EditProductSheet: View {
 
 #Preview {
     HomeView()
+        .environmentObject(AppState().favoritesManager)
+        .environmentObject(AppState().cartManager)
+        .environmentObject(TabSelection())
 }
