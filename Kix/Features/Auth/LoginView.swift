@@ -99,7 +99,10 @@ struct LoginView: View {
                 
                 // 4. 带液态镜面效果的登录按钮
                 Button(action: {
-                    viewModel.login {
+                    viewModel.login { user in
+                        if let user = user {
+                            appState.user = MenuUser(username: user.username, email: user.email)
+                        }
                         appState.isAuthenticated = true
                     }
                 }) {

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct MenuUser {
+struct MenuUser: Codable {
     var username: String
     var email: String
     var shoeSize: Double = 42.0
@@ -103,6 +103,7 @@ struct MenuView: View {
                                 title: Text("退出登录"),
                                 message: Text("确定要退出登录吗？"),
                                 primaryButton: .destructive(Text("退出")) {
+                                    appState.user = nil
                                     appState.isAuthenticated = false
                                 },
                                 secondaryButton: .cancel()

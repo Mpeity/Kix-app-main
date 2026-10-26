@@ -9,15 +9,15 @@ class AuthViewModel: ObservableObject {
     @Published var confirmPassword: String = ""
     @Published var errorMessage: String? = nil
     
-    func login(completion: @escaping () -> Void) {
+    func login(completion: @escaping (User?) -> Void) {
         let normalizedEmail = email.lowercased()
         if normalizedEmail.isEmpty || password.isEmpty {
             errorMessage = "请输入邮箱和密码。"
         } else {
-            // 使用 UserStore 进行不区分大小写的检查
-            if UserStore.shared.user(email: normalizedEmail, password: password) != nil {
+            let user = UserStore.shared.user(email: normalizedEmail, password: password)
+            if user != nil {
                 errorMessage = nil
-                completion()
+                completion(user)
             } else {
                 errorMessage = "邮箱或密码错误。"
             }
