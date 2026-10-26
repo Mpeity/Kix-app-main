@@ -7,7 +7,7 @@ class FavoritesManager: ObservableObject {
         didSet { saveFavorites() }
     }
     
-    private let favoritesKey = "favorites_ids"
+    private let favoritesKey = "kix_favorites"
 
     init() {
         loadFavorites()
@@ -28,26 +28,27 @@ class FavoritesManager: ObservableObject {
     }
     
     private func saveFavorites() {
-        let ids = favorites.map { $0.id }
-        if let encoded = try? JSONEncoder().encode(ids) {
-            UserDefaults.standard.set(encoded, forKey: favoritesKey)
+        do {
+            let data = try JSONEncoder().encode(favorites)
+            UserDefaults.standard.set(data, forKey: favoritesKey)
+        } catch {
+            print("保存收藏数据失败：\(error)")
         }
     }
     
     private func loadFavorites() {
-        guard let data = UserDefaults.standard.data(forKey: favoritesKey),
-              let ids = try? JSONDecoder().decode([UUID].self, from: data) else {
-            // 回退到默认模拟数据匹配
+        guard let data = UserDefaults.standard.data(forKey: favoritesKey) else {
+            // 首次加载，使用默认的模拟收藏数据
             self.favorites = MockData.products.filter { $0.isFavorite }
             return
         }
         
-        let allProducts = MockData.products
-        self.favorites = allProducts.filter { ids.contains($0.id) }
-        
-        // 在本地模型副本中标记为收藏
-        for index in 0..<self.favorites.count {
-            self.favorites[index].isFavorite = true
+        do {
+            favorites = try JSONDecoder().decode([Product].self, from: data)
+        } catch {
+            print("加载收藏数据失败：\(error)")
+            // 回退到默认模拟数据
+            self.favorites = MockData.products.filter { $0.isFavorite }
         }
     }
 }

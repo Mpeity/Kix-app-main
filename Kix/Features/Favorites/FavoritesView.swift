@@ -40,43 +40,27 @@ struct FavoritesView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding()
                 } else {
-                    List {
-                        ForEach(favoritesManager.favorites) { product in
-                            HStack {
-                                Image(product.imageName)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 60, height: 60)
-                                    .clipped()
-                                VStack(alignment: .leading) {
-                                    Text(product.name)
-                                        .font(.headline)
-                                    Text(product.brand)
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                }
-                                Spacer()
-                                Button(action: {
-                                    favoritesManager.toggleFavorite(product)
-                                }) {
-                                    Image(systemName: "heart.fill")
-                                        .foregroundColor(.red)
-                                }
-                                .accessibilityIdentifier("remove_favorite_button_\(product.id)")
-                            }
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                selectedProduct = product
+                    ScrollView {
+                        LazyVGrid(columns: [
+                            GridItem(.flexible(), spacing: 12),
+                            GridItem(.flexible(), spacing: 12)
+                        ], spacing: 12) {
+                            ForEach(favoritesManager.favorites) { product in
+                                FavoriteCard(
+                                    product: product,
+                                    onRemove: {
+                                        favoritesManager.toggleFavorite(product)
+                                    },
+                                    onTap: {
+                                        selectedProduct = product
+                                    }
+                                )
                             }
                         }
-                        .onDelete { indexSet in
-                            indexSet.forEach { i in
-                                let product = favoritesManager.favorites[i]
-                                favoritesManager.toggleFavorite(product)
-                            }
-                        }
+                        .padding(.horizontal, 16)
+                        .padding(.top, 16)
+                        .padding(.bottom, 100)
                     }
-                    .listStyle(PlainListStyle())
                 }
             }
             .navigationBarHidden(true)
@@ -87,6 +71,86 @@ struct FavoritesView: View {
                         .environmentObject(cartManager)
                         .environmentObject(tabSelection)
                 }
+            }
+        }
+    }
+}
+
+// MARK: - 收藏卡片组件
+struct FavoriteCard: View {
+    let product: Product
+    var onRemove: () -> Void
+    var onTap: () -> Void
+    
+    @State private var isPressed = false
+    
+    private let brandGradient = LinearGradient(colors: [.purple, .blue], startPoint: .leading, endPoint: .trailing)
+    private let bgGradient = LinearGradient(colors: [.purple.opacity(0.06), .blue.opacity(0.06)], startPoint: .topLeading, endPoint: .bottomTrailing)
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // 图片区域
+            ZStack(alignment: .topTrailing) {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(bgGradient)
+                    .frame(height: 140)
+                
+                if let uiImage = UIImage(named: product.imageName) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 140)
+                        .clipped()
+                        .cornerRadius(16)
+                } else {
+                    VStack {
+                        Image(systemName: "shoeprints.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.gray.opacity(0.35))
+                    }
+                    .frame(height: 140)
+                    .frame(maxWidth: .infinity)
+                }
+                
+                // 删除按钮
+                Button(action: onRemove) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundColor(.white)
+                        .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
+                }
+                .padding(8)
+                .accessibilityIdentifier("remove_favorite_button_\(product.id)")
+            }
+            
+            // 商品信息
+            VStack(alignment: .leading, spacing: 6) {
+                Text(product.brand.uppercased())
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(.purple)
+                
+                Text(product.name)
+                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+                
+                Text(String(format: "$%.0f", product.price))
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundStyle(brandGradient)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+        }
+        .background(Color(.systemBackground))
+        .cornerRadius(20)
+        .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
+        .scaleEffect(isPressed ? 0.95 : 1.0)
+        .animation(.easeInOut(duration: 0.15), value: isPressed)
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.1)) { isPressed = true }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.1)) { isPressed = false }
+                onTap()
             }
         }
     }
