@@ -8,6 +8,11 @@ struct CartView: View {
     @State private var showingDeleteAlert: PaymentMethod? = nil
     @State private var showClearCartAlert = false
     @State private var selectedItemIDs: Set<UUID> = []
+    @State private var showCheckoutProcessing = false
+    @State private var showCheckoutSuccess = false
+    @State private var orderTotal: Double = 0
+    @State private var orderItemCount: Int = 0
+    @State private var showNoPaymentAlert = false
     
     var body: some View {
         NavigationView {
@@ -198,6 +203,12 @@ struct CartView: View {
                         let existingIDs = Set(newItems.map { $0.id })
                         selectedItemIDs = selectedItemIDs.intersection(existingIDs)
                     }
+                    .onAppear {
+                        // 自动选中所有加载的商品
+                        if selectedItemIDs.isEmpty && !cartManager.items.isEmpty {
+                            selectedItemIDs = Set(cartManager.items.map { $0.id })
+                        }
+                    }
                     
                     VStack(spacing: 12) {
                         HStack {
@@ -207,7 +218,27 @@ struct CartView: View {
                                 .font(.title2).bold()
                                 .accessibilityIdentifier("cart_total_price")
                         }
-                        Button(action: { showCheckoutAlert = true }) {
+                        Button(action: { 
+                            // 检查是否有支付方式
+                            if paymentManager.selectedMethod == nil {
+                                showNoPaymentAlert = true
+                                return
+                            }
+                            
+                            // 开始结算流程
+                            orderTotal = selectedTotalPrice()
+                            orderItemCount = cartManager.items.filter { selectedItemIDs.contains($0.id) }.reduce(0) { $0 + $1.quantity }
+                            showCheckoutProcessing = true
+                            
+                            // 模拟结算延迟
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                // 移除已结算的商品
+                                cartManager.items.removeAll { selectedItemIDs.contains($0.id) }
+                                selectedItemIDs.removeAll()
+                                showCheckoutProcessing = false
+                                showCheckoutSuccess = true
+                            }
+                        }) {
                             Text("去结算")
                                 .font(.system(size: 18, weight: .bold, design: .rounded))
                                 .kerning(1)
@@ -220,18 +251,11 @@ struct CartView: View {
                                 .cornerRadius(16)
                                 .shadow(color: .purple.opacity(0.35), radius: 10, y: 6)
                         }
-                        .disabled(paymentManager.selectedMethod == nil || selectedItemIDs.isEmpty)
-                        .opacity((paymentManager.selectedMethod == nil || selectedItemIDs.isEmpty) ? 0.6 : 1)
+                        .disabled(selectedItemIDs.isEmpty)
+                        .opacity(selectedItemIDs.isEmpty ? 0.6 : 1)
                         .accessibilityIdentifier("checkout_button")
                     }
                     .padding([.horizontal, .bottom])
-                    .alert(isPresented: $showCheckoutAlert) {
-                        Alert(title: Text("结算"), message: Text(checkoutMessage()), dismissButton: .default(Text("确定"), action: {
-                            // 只移除已选中的商品
-                            cartManager.items.removeAll { selectedItemIDs.contains($0.id) }
-                            selectedItemIDs.removeAll()
-                        }))
-                    }
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -254,6 +278,18 @@ struct CartView: View {
             }
             .presentationDetents([.height(300), .medium])
         }
+        .sheet(isPresented: $showCheckoutProcessing) {
+            CheckoutProcessingView()
+        }
+        .sheet(isPresented: $showCheckoutSuccess) {
+            CheckoutSuccessView(
+                totalAmount: orderTotal,
+                itemCount: orderItemCount,
+                onDismiss: {
+                    showCheckoutSuccess = false
+                }
+            )
+        }
         .alert(item: $showingDeleteAlert) { method in
             Alert(title: Text("移除卡片？"), message: Text("将移除尾号为 \(method.numberMasked.suffix(4)) 的 \(method.brand.rawValue)。"), primaryButton: .destructive(Text("移除"), action: {
                 paymentManager.remove(method)
@@ -266,6 +302,11 @@ struct CartView: View {
             }
         } message: {
             Text("将清空购物车中的所有商品。")
+        }
+        .alert("请先添加支付方式", isPresented: $showNoPaymentAlert) {
+            Button("知道了") {}
+        } message: {
+            Text("结算前需要先添加支付方式，请向下滚动到支付方式区域添加。")
         }
     }
     
@@ -283,14 +324,122 @@ struct CartView: View {
             .filter { selectedItemIDs.contains($0.id) }
             .reduce(0) { $0 + ($1.product.price * Double($1.quantity)) }
     }
-    
-    private func checkoutMessage() -> String {
-        guard let method = paymentManager.selectedMethod else {
-            return "请先添加并选择一种支付方式。"
+}
+
+// MARK: - 结算中视图
+struct CheckoutProcessingView: View {
+    var body: some View {
+        VStack(spacing: 24) {
+            Spacer()
+            
+            // 加载动画
+            ProgressView()
+                .scaleEffect(1.5)
+                .progressViewStyle(CircularProgressViewStyle(tint: .purple))
+            
+            VStack(spacing: 12) {
+                Text("结算中...")
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundColor(.primary)
+                
+                Text("正在处理您的订单")
+                    .font(.system(size: 16))
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
         }
-        let selectedItems = cartManager.items.filter { selectedItemIDs.contains($0.id) }
-        let itemCount = selectedItems.reduce(0) { $0 + $1.quantity }
-        return "已通过 \(method.brand.rawValue)（\(method.numberMasked)）支付 \(itemCount) 件商品，共计 $\(String(format: "%.2f", selectedTotalPrice()))。下单成功！（模拟）"
+        .background(Color(.systemBackground))
+    }
+}
+
+// MARK: - 结算成功视图
+struct CheckoutSuccessView: View {
+    let totalAmount: Double
+    let itemCount: Int
+    var onDismiss: () -> Void
+    
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 24) {
+                Spacer()
+                
+                // 成功图标
+                ZStack {
+                    Circle()
+                        .fill(Color.green.opacity(0.2))
+                        .frame(width: 120, height: 120)
+                    
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 80))
+                        .foregroundColor(.green)
+                }
+                
+                VStack(spacing: 12) {
+                    Text("结算成功！")
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                    
+                    Text("您的订单已确认")
+                        .font(.system(size: 16))
+                        .foregroundColor(.secondary)
+                }
+                
+                // 订单详情
+                VStack(spacing: 16) {
+                    HStack {
+                        Text("商品数量")
+                            .font(.system(size: 16))
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text("\(itemCount) 件")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.primary)
+                    }
+                    
+                    Divider()
+                    
+                    HStack {
+                        Text("支付金额")
+                            .font(.system(size: 16))
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text("$\(String(format: "%.2f", totalAmount))")
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .foregroundColor(.purple)
+                    }
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(16)
+                .padding(.horizontal, 32)
+                
+                Spacer()
+                
+                // 完成按钮
+                Button(action: {
+                    onDismiss()
+                    dismiss()
+                }) {
+                    Text("完成")
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(
+                            LinearGradient(colors: [.blue, .purple], startPoint: .leading, endPoint: .trailing)
+                        )
+                        .cornerRadius(16)
+                        .shadow(color: .purple.opacity(0.35), radius: 10, y: 6)
+                }
+                .padding(.horizontal, 32)
+                .padding(.bottom, 32)
+            }
+            .background(Color(.systemBackground))
+            .navigationBarTitleDisplayMode(.inline)
+        }
     }
 }
 

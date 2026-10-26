@@ -38,8 +38,23 @@ struct PaymentMethod: Identifiable, Codable, Equatable {
 }
 
 final class PaymentManager: ObservableObject {
-    @Published private(set) var methods: [PaymentMethod] = []
-    @Published var selectedMethodID: UUID? = nil
+    @Published private(set) var methods: [PaymentMethod] = [] {
+        didSet {
+            saveToDisk()
+        }
+    }
+    @Published var selectedMethodID: UUID? = nil {
+        didSet {
+            saveToDisk()
+        }
+    }
+    
+    private let methodsKey = "kix_payment_methods"
+    private let selectedMethodKey = "kix_selected_payment_method"
+    
+    init() {
+        loadFromDisk()
+    }
     
     func addTestCard(brand: CardBrand, holderName: String = "测试用户", expiryMonth: Int = 12, expiryYear: Int = 2030) {
         let masked = Self.mask(cardNumber: brand.testNumber)
@@ -66,6 +81,44 @@ final class PaymentManager: ObservableObject {
         guard digits.count >= 4 else { return cardNumber }
         let suffix = digits.suffix(4)
         return "•••• •••• •••• \(suffix)"
+    }
+    
+    // MARK: - 本地缓存
+    
+    private func saveToDisk() {
+        do {
+            let methodsData = try JSONEncoder().encode(methods)
+            UserDefaults.standard.set(methodsData, forKey: methodsKey)
+            
+            if let selectedID = selectedMethodID {
+                let idData = try JSONEncoder().encode(selectedID)
+                UserDefaults.standard.set(idData, forKey: selectedMethodKey)
+            } else {
+                UserDefaults.standard.removeObject(forKey: selectedMethodKey)
+            }
+        } catch {
+            print("保存支付方式数据失败：\(error)")
+        }
+    }
+    
+    private func loadFromDisk() {
+        // 加载支付方式列表
+        if let methodsData = UserDefaults.standard.data(forKey: methodsKey) {
+            do {
+                methods = try JSONDecoder().decode([PaymentMethod].self, from: methodsData)
+            } catch {
+                print("加载支付方式数据失败：\(error)")
+            }
+        }
+        
+        // 加载选中的支付方式
+        if let idData = UserDefaults.standard.data(forKey: selectedMethodKey) {
+            do {
+                selectedMethodID = try JSONDecoder().decode(UUID?.self, from: idData)
+            } catch {
+                print("加载选中支付方式失败：\(error)")
+            }
+        }
     }
 }
 

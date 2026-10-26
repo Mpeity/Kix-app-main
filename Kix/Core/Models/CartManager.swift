@@ -2,7 +2,18 @@ import Foundation
 import Combine
 
 class CartManager: ObservableObject {
-    @Published var items: [CartItem] = []
+    @Published var items: [CartItem] = [] {
+        didSet {
+            saveToDisk()
+        }
+    }
+    
+    private let storageKey = "kix_cart_items"
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        loadFromDisk()
+    }
     
     func addToCart(product: Product) {
         if let index = items.firstIndex(where: { $0.product.id == product.id }) {
@@ -39,5 +50,28 @@ class CartManager: ObservableObject {
     
     func clearCart() {
         items.removeAll()
+    }
+    
+    // MARK: - 本地缓存
+    
+    private func saveToDisk() {
+        do {
+            let data = try JSONEncoder().encode(items)
+            UserDefaults.standard.set(data, forKey: storageKey)
+        } catch {
+            print("保存购物车数据失败：\(error)")
+        }
+    }
+    
+    private func loadFromDisk() {
+        guard let data = UserDefaults.standard.data(forKey: storageKey) else {
+            return
+        }
+        
+        do {
+            items = try JSONDecoder().decode([CartItem].self, from: data)
+        } catch {
+            print("加载购物车数据失败：\(error)")
+        }
     }
 }
