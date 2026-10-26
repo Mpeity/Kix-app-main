@@ -7,6 +7,7 @@ struct CartView: View {
     @State private var showAddCardSheet = false
     @State private var showingDeleteAlert: PaymentMethod? = nil
     @State private var showClearCartAlert = false
+    @State private var selectedItemIDs: Set<UUID> = []
     
     var body: some View {
         NavigationView {
@@ -46,12 +47,41 @@ struct CartView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             // 商品列表
                             VStack(alignment: .leading, spacing: 12) {
-                                Text("商品")
-                                    .font(.headline)
-                                    .padding(.horizontal)
+                                HStack {
+                                    Text("商品")
+                                        .font(.headline)
+                                    Spacer()
+                                    Button(action: {
+                                        if selectedItemIDs.count == cartManager.items.count {
+                                            selectedItemIDs.removeAll()
+                                        } else {
+                                            selectedItemIDs = Set(cartManager.items.map { $0.id })
+                                        }
+                                    }) {
+                                        Text(selectedItemIDs.count == cartManager.items.count ? "取消全选" : "全选")
+                                            .font(.subheadline)
+                                            .foregroundColor(.blue)
+                                    }
+                                    .accessibilityIdentifier("select_all_button")
+                                }
+                                .padding(.horizontal)
                                 
                                 ForEach(cartManager.items) { item in
                                     HStack(spacing: 12) {
+                                        // 选中按钮
+                                        Button(action: {
+                                            if selectedItemIDs.contains(item.id) {
+                                                selectedItemIDs.remove(item.id)
+                                            } else {
+                                                selectedItemIDs.insert(item.id)
+                                            }
+                                        }) {
+                                            Image(systemName: selectedItemIDs.contains(item.id) ? "checkmark.circle.fill" : "circle")
+                                                .foregroundColor(selectedItemIDs.contains(item.id) ? .blue : .gray)
+                                                .font(.system(size: 24))
+                                        }
+                                        .accessibilityIdentifier("select_item_button_\(item.id)")
+                                        
                                         if let uiImage = UIImage(named: item.product.imageName) {
                                             Image(uiImage: uiImage)
                                                 .resizable()
@@ -164,12 +194,16 @@ struct CartView: View {
                         }
                         .padding(.vertical)
                     }
+                    .onChange(of: cartManager.items) { newItems in
+                        let existingIDs = Set(newItems.map { $0.id })
+                        selectedItemIDs = selectedItemIDs.intersection(existingIDs)
+                    }
                     
                     VStack(spacing: 12) {
                         HStack {
                             Text("合计：").font(.title2)
                             Spacer()
-                            Text("$\(String(format: "%.2f", cartManager.totalPrice()))")
+                            Text("$\(String(format: "%.2f", selectedTotalPrice()))")
                                 .font(.title2).bold()
                                 .accessibilityIdentifier("cart_total_price")
                         }
@@ -186,14 +220,16 @@ struct CartView: View {
                                 .cornerRadius(16)
                                 .shadow(color: .purple.opacity(0.35), radius: 10, y: 6)
                         }
-                        .disabled(paymentManager.selectedMethod == nil)
-                        .opacity(paymentManager.selectedMethod == nil ? 0.6 : 1)
+                        .disabled(paymentManager.selectedMethod == nil || selectedItemIDs.isEmpty)
+                        .opacity((paymentManager.selectedMethod == nil || selectedItemIDs.isEmpty) ? 0.6 : 1)
                         .accessibilityIdentifier("checkout_button")
                     }
                     .padding([.horizontal, .bottom])
                     .alert(isPresented: $showCheckoutAlert) {
                         Alert(title: Text("结算"), message: Text(checkoutMessage()), dismissButton: .default(Text("确定"), action: {
-                            cartManager.clearCart()
+                            // 只移除已选中的商品
+                            cartManager.items.removeAll { selectedItemIDs.contains($0.id) }
+                            selectedItemIDs.removeAll()
                         }))
                     }
                 }
@@ -242,11 +278,19 @@ struct CartView: View {
         }
     }
     
+    private func selectedTotalPrice() -> Double {
+        cartManager.items
+            .filter { selectedItemIDs.contains($0.id) }
+            .reduce(0) { $0 + ($1.product.price * Double($1.quantity)) }
+    }
+    
     private func checkoutMessage() -> String {
         guard let method = paymentManager.selectedMethod else {
             return "请先添加并选择一种支付方式。"
         }
-        return "已通过 \(method.brand.rawValue)（\(method.numberMasked)）支付。下单成功！（模拟）"
+        let selectedItems = cartManager.items.filter { selectedItemIDs.contains($0.id) }
+        let itemCount = selectedItems.reduce(0) { $0 + $1.quantity }
+        return "已通过 \(method.brand.rawValue)（\(method.numberMasked)）支付 \(itemCount) 件商品，共计 $\(String(format: "%.2f", selectedTotalPrice()))。下单成功！（模拟）"
     }
 }
 
