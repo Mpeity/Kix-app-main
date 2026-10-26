@@ -6,7 +6,7 @@ struct LoginView: View {
     @State private var showRegister: Bool = false
     @State private var showPassword: Bool = false
     
-    // Цвета бренда
+    // 品牌渐变色
     let brandGradient = LinearGradient(
         colors: [Color.blue, Color.purple, Color.pink.opacity(0.8)],
         startPoint: .leading,
@@ -15,20 +15,20 @@ struct LoginView: View {
     
     var body: some View {
         ZStack {
-            // Мягкий фон с легким свечением сверху
+            // 柔和背景，顶部带有微光效果
             Color.white.edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 25) {
                 Spacer()
                 
-                // 1. Улучшенный Логотип KIX (SwiftUI вместо картинки)
+                // 1. 改进版 KIX 标志（SwiftUI 绘制，非图片）
                 VStack(spacing: -15) {
                     Text("KIX")
                         .font(.system(size: 100, weight: .black, design: .rounded))
                         .italic()
                         .foregroundStyle(brandGradient)
                         .shadow(color: .purple.opacity(0.3), radius: 10, x: 0, y: 10)
-                        // Эффект зеркального блика
+                        // 镜面高光效果
                         .overlay(
                             Text("KIX")
                                 .font(.system(size: 100, weight: .black, design: .rounded))
@@ -45,12 +45,12 @@ struct LoginView: View {
                 }
                 .padding(.bottom, 30)
                 
-                // 2. Welcome Text
+                // 2. 欢迎文字
                 Text("Welcome Back")
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundColor(.black.opacity(0.8))
                 
-                // 3. Поля ввода в стиле "Liquid" (мягкие и закругленные)
+                // 3. "液态"风格输入框（柔和圆角）
                 VStack(spacing: 18) {
                     customField(title: "Email", text: $viewModel.email, isSecure: false)
                         .textInputAutocapitalization(.never)
@@ -58,7 +58,7 @@ struct LoginView: View {
                         .keyboardType(.emailAddress)
                         .accessibilityIdentifier("login_email_field")
                     
-                    // Password with show/hide toggle
+                    // 密码输入框，带显示/隐藏切换
                     HStack(spacing: 12) {
                         Group {
                             if showPassword {
@@ -97,7 +97,7 @@ struct LoginView: View {
                         .font(.system(.caption, design: .rounded))
                 }
                 
-                // 4. Кнопка Login с эффектом Liquid Mirror
+                // 4. 带液态镜面效果的登录按钮
                 Button(action: {
                     viewModel.login {
                         appState.isAuthenticated = true
@@ -116,7 +116,7 @@ struct LoginView: View {
                 .padding(.top, 10)
                 .accessibilityIdentifier("login_button")
                 
-                // 5. Register Button
+                // 5. 注册按钮
                 Button(action: { showRegister = true }) {
                     HStack {
                         Text("New here?")
@@ -145,7 +145,7 @@ struct LoginView: View {
         }
     }
     
-    // Вспомогательная функция для стильных полей ввода
+    // 辅助函数：样式化输入框
     @ViewBuilder
     private func customField(title: String, text: Binding<String>, isSecure: Bool) -> some View {
         Group {

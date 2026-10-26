@@ -37,7 +37,7 @@ class FavoritesManager: ObservableObject {
     private func loadFavorites() {
         guard let data = UserDefaults.standard.data(forKey: favoritesKey),
               let ids = try? JSONDecoder().decode([UUID].self, from: data) else {
-            // Fallback to default mock data matching
+            // 回退到默认模拟数据匹配
             self.favorites = MockData.products.filter { $0.isFavorite }
             return
         }
@@ -45,7 +45,7 @@ class FavoritesManager: ObservableObject {
         let allProducts = MockData.products
         self.favorites = allProducts.filter { ids.contains($0.id) }
         
-        // Mark them as favorite in the local model copy
+        // 在本地模型副本中标记为收藏
         for index in 0..<self.favorites.count {
             self.favorites[index].isFavorite = true
         }

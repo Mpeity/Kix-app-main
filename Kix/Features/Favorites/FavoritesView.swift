@@ -7,7 +7,7 @@ struct FavoritesView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .center, spacing: 0) {
-                // Header centered with gradient to match Home styling
+                // 头部居中，使用渐变效果与首页风格一致
                 Text("Favorites")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
                     .italic()
@@ -22,7 +22,7 @@ struct FavoritesView: View {
                     .accessibilityIdentifier("favorites_title")
                 
                 if favoritesManager.favorites.isEmpty {
-                    // Empty state message centered
+                    // 空状态提示，居中显示
                     VStack(spacing: 8) {
                         Image(systemName: "heart")
                             .font(.system(size: 40, weight: .semibold))

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct LoginLogoView: View {
     var body: some View {
-        Image("LoginLogo") // Assuming you have an image named "LoginLogo" in your assets
+        Image("LoginLogo") // 假设你的资源目录中有一张名为 "LoginLogo" 的图片
             .resizable()
             .scaledToFit()
             .frame(width: 150, height: 150)

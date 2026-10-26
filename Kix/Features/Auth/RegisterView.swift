@@ -10,7 +10,7 @@ struct RegisterView: View {
     @Environment(\.dismiss) private var dismiss
     var onRegister: ((String, String, String) -> Void)? = nil
     
-    // Цвета бренда (как в LoginView)
+    // 品牌渐变色（与 LoginView 一致）
     let brandGradient = LinearGradient(
         colors: [Color.blue, Color.purple, Color.pink.opacity(0.8)],
         startPoint: .leading,
@@ -19,20 +19,20 @@ struct RegisterView: View {
     
     var body: some View {
         ZStack {
-            // Мягкий белый фон (как в LoginView)
+            // 柔和白色背景（与 LoginView 一致）
             Color.white.edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 25) {
                 Spacer()
                 
-                // 1. Улучшенный Логотип KIX (SwiftUI, как в LoginView)
+                // 1. 改进版 KIX 标志（SwiftUI 绘制，与 LoginView 一致）
                 VStack(spacing: -15) {
                     Text("KIX")
                         .font(.system(size: 80, weight: .black, design: .rounded))
                         .italic()
                         .foregroundStyle(brandGradient)
                         .shadow(color: .purple.opacity(0.3), radius: 10, x: 0, y: 10)
-                        // Эффект зеркального блика
+                        // 镜面高光效果
                         .overlay(
                             Text("KIX")
                                 .font(.system(size: 80, weight: .black, design: .rounded))
@@ -49,12 +49,12 @@ struct RegisterView: View {
                 }
                 .padding(.bottom, 20)
                 
-                // 2. Welcome Text
+                // 2. 欢迎文字
                 Text("Join KIX Family")
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundColor(.black.opacity(0.8))
                 
-                // 3. Поля ввода в стиле "Liquid" (как в LoginView)
+                // 3. "液态"风格输入框（与 LoginView 一致）
                 VStack(spacing: 18) {
                     customField(title: "Email", text: $email, isSecure: false)
                         .textInputAutocapitalization(.never)
@@ -84,7 +84,7 @@ struct RegisterView: View {
                         .font(.system(.caption, design: .rounded))
                 }
                 
-                // 4. Кнопка Register с эффектом Liquid Mirror (как в LoginView)
+                // 4. 带液态镜面效果的注册按钮（与 LoginView 一致）
                 Button(action: {
                     if email.isEmpty || username.isEmpty || password.isEmpty || confirmPassword.isEmpty {
                         errorMessage = "Please fill all fields."
@@ -113,7 +113,7 @@ struct RegisterView: View {
                 .padding(.top, 10)
                 .accessibilityIdentifier("register_button")
                 
-                // 5. Login Button
+                // 5. 登录按钮
                 Button(action: { dismiss() }) {
                     HStack {
                         Text("Already have an account?")
@@ -133,7 +133,7 @@ struct RegisterView: View {
             .padding(.horizontal, 35)
         }
         .onAppear {
-            // Очистить поля при появлении экрана
+            // 页面出现时清空输入框
             email = ""
             username = ""
             password = ""
@@ -142,7 +142,7 @@ struct RegisterView: View {
         }
     }
     
-    // Вспомогательная функция для стильных полей ввода (как в LoginView)
+    // 辅助函数：样式化输入框（与 LoginView 一致）
     @ViewBuilder
     private func customField(title: String, text: Binding<String>, isSecure: Bool) -> some View {
         Group {

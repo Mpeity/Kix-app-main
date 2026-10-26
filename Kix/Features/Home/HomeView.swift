@@ -3,7 +3,7 @@ import SwiftUI
 struct HomeView: View {
     @State private var products: [Product] = MockData.products
     @EnvironmentObject var appState: AppState
-    // Brand gradient (purple → blue) with subtle green accents in cards
+    // 品牌渐变（紫色 → 蓝色），卡片中带有微妙的绿色点缀
     let brandGradient = LinearGradient(colors: [.purple, .blue], startPoint: .leading, endPoint: .trailing)
     
     @State private var showAddSheet: Bool = false
@@ -19,7 +19,7 @@ struct HomeView: View {
                 Color.white.ignoresSafeArea()
                 
                 VStack(alignment: .leading, spacing: 0) {
-                    // --- HEADER ---
+                    // --- 头部 ---
                     VStack(alignment: .center, spacing: 4) {
                         Text("THE KIX LIST")
                             .font(.system(size: 32, weight: .bold, design: .rounded))
@@ -40,7 +40,7 @@ struct HomeView: View {
                     .padding(.bottom, 15)
 
                     ScrollView {
-                        // --- LIST OF PRODUCTS ---
+                        // --- 商品列表 ---
                         LazyVStack(spacing: 25) {
                             ForEach(products) { product in
                                 NewProductCard(
@@ -62,7 +62,7 @@ struct HomeView: View {
                             }
                         }
                         .padding(.top, 10)
-                        .padding(.bottom, 100) // spacing for tab bar
+                        .padding(.bottom, 100) // 为标签栏预留间距
                     }
                 }
             }
@@ -119,7 +119,7 @@ struct HomeView: View {
                                     description: newDescription
                                 )
                                 products.insert(product, at: 0)
-                                // reset fields
+                                // 重置输入框
                                 newName = ""; newBrand = ""; newPriceText = ""; newDescription = ""; newImageName = ""
                                 showAddSheet = false
                             }
@@ -132,7 +132,7 @@ struct HomeView: View {
     }
 }
 
-// --- CARD WITH BRAND COLORS AND OVERFLOW MENU ---
+// --- 带品牌颜色和溢出菜单的卡片 ---
 struct NewProductCard: View {
     let product: Product
     var onEdit: (Product) -> Void
@@ -146,13 +146,13 @@ struct NewProductCard: View {
     @State private var showDetail = false
     @State private var showEditSheet = false
 
-    // Local gradients to align with brand
+    // 与品牌风格一致的本地渐变
     private let bgGradient = LinearGradient(colors: [.purple.opacity(0.06), .blue.opacity(0.06)], startPoint: .topLeading, endPoint: .bottomTrailing)
     private let priceGradient = LinearGradient(colors: [.purple, .blue], startPoint: .leading, endPoint: .trailing)
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Product image area
+            // 商品图片区域
             ZStack {
                 RoundedRectangle(cornerRadius: 25)
                     .fill(bgGradient)
@@ -184,7 +184,7 @@ struct NewProductCard: View {
                     }
                 }
 
-                // Heart overlay at top-right
+                // 右上角心形收藏按钮
                 VStack {
                     HStack {
                         Spacer()
@@ -204,7 +204,7 @@ struct NewProductCard: View {
                 .padding(.top, 8)
             }
 
-            // Product info
+            // 商品信息
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text(product.brand.uppercased())
@@ -227,7 +227,7 @@ struct NewProductCard: View {
             }
             .padding(.horizontal, 6)
 
-            // Ellipsis menu under the price
+            // 价格下方的省略号菜单
             HStack {
                 Spacer()
                 Button(action: { showMenu = true }) {
@@ -274,7 +274,7 @@ struct NewProductCard: View {
     }
 }
 
-// Simple edit form (name/price/description)
+// 简易编辑表单（名称/价格/描述）
 private struct EditProductSheet: View {
     let original: Product
     var onSave: (Product) -> Void

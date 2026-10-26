@@ -11,7 +11,7 @@ struct CartView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: 0) {
-                // Header
+                // 头部
                 HStack { Spacer() }
                 Text("Your Cart")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
@@ -233,7 +233,7 @@ struct CartView: View {
     }
 }
 
-// MARK: - Add Test Card Sheet
+// MARK: - 添加测试卡片表单
 struct AddTestCardSheet: View {
     var onAdd: (CardBrand) -> Void
     @Environment(\.dismiss) private var dismiss

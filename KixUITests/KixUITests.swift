@@ -2,7 +2,7 @@
 //  KixUITests.swift
 //  KixUITests
 //
-//  Created by Konstanty Halets on 06/01/2026.
+//  由 Konstanty Halets 创建于 2026/01/06。
 //
 
 import XCTest
@@ -10,30 +10,30 @@ import XCTest
 final class KixUITests: XCTestCase {
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        // 在此处放置初始化代码。此方法在类中每个测试方法调用之前执行。
 
-        // In UI tests it is usually best to stop immediately when a failure occurs.
+        // 在 UI 测试中，通常最好在发生失败时立即停止。
         continueAfterFailure = false
 
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+        // 在 UI 测试中，在测试运行之前设置所需的初始状态（如界面方向）非常重要。setUp 方法是进行此操作的好地方。
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        // 在此处放置清理代码。此方法在类中每个测试方法调用之后执行。
     }
 
     @MainActor
     func testExample() throws {
-        // UI tests must launch the application that they test.
+        // UI 测试必须启动它们所测试的应用程序。
         let app = XCUIApplication()
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        // 使用 XCTAssert 及相关函数来验证测试是否产生正确结果。
     }
 
     @MainActor
     func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
+        // 此测试测量应用程序启动所需的时间。
         measure(metrics: [XCTApplicationLaunchMetric()]) {
             XCUIApplication().launch()
         }
@@ -54,7 +54,7 @@ final class KixUITests: XCTestCase {
         passwordField.tap()
         passwordField.typeText("password")
         loginButton.tap()
-        // Check for main tab bar after login
+        // 登录后检查主标签栏
         XCTAssertTrue(app.tabBars.buttons["tab_home"].exists)
     }
 
@@ -62,7 +62,7 @@ final class KixUITests: XCTestCase {
     func testAddToCart() throws {
         let app = XCUIApplication()
         app.launch()
-        // Login first
+        // 先登录
         let emailField = app.textFields["login_email_field"]
         if emailField.exists {
             emailField.tap()
@@ -72,7 +72,7 @@ final class KixUITests: XCTestCase {
             passwordField.typeText("password")
             app.buttons["login_button"].tap()
         }
-        // Add to cart from first product card
+        // 从第一个商品卡片添加到购物车
         let addToCartButton = app.buttons.matching(identifier: "add_to_cart_button_").firstMatch
         XCTAssertTrue(addToCartButton.waitForExistence(timeout: 2))
         addToCartButton.tap()
@@ -84,7 +84,7 @@ final class KixUITests: XCTestCase {
     func testSwitchTabs() throws {
         let app = XCUIApplication()
         app.launch()
-        // Login first
+        // 先登录
         let emailField = app.textFields["login_email_field"]
         if emailField.exists {
             emailField.tap()
@@ -108,7 +108,7 @@ final class KixUITests: XCTestCase {
     func testFavoriteProduct() throws {
         let app = XCUIApplication()
         app.launch()
-        // Login first
+        // 先登录
         let emailField = app.textFields["login_email_field"]
         if emailField.exists {
             emailField.tap()
@@ -129,7 +129,7 @@ final class KixUITests: XCTestCase {
     func testCheckoutButtonTap() throws {
         let app = XCUIApplication()
         app.launch()
-        // Login first
+        // 先登录
         let emailField = app.textFields["login_email_field"]
         if emailField.exists {
             emailField.tap()
@@ -139,7 +139,7 @@ final class KixUITests: XCTestCase {
             passwordField.typeText("password")
             app.buttons["login_button"].tap()
         }
-        // Add to cart if needed
+        // 如需要则添加到购物车
         let addToCartButton = app.buttons.matching(identifier: "add_to_cart_button_").firstMatch
         if addToCartButton.exists {
             addToCartButton.tap()
@@ -148,6 +148,6 @@ final class KixUITests: XCTestCase {
         let checkoutButton = app.buttons["checkout_button"]
         XCTAssertTrue(checkoutButton.exists)
         checkoutButton.tap()
-        // Optionally check for confirmation UI
+        // 可选：检查确认界面
     }
 }

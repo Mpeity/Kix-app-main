@@ -18,7 +18,7 @@ class UserStore {
     func load() {
         if let data = UserDefaults.standard.data(forKey: key),
            let decoded = try? JSONDecoder().decode([User].self, from: data) {
-            // Normalize any previously stored emails to lowercase to enforce case-insensitive behavior
+            // 将之前存储的邮箱统一转为小写，以确保不区分大小写的行为
             users = decoded.map { user in
                 let lowercasedEmail = user.email.lowercased()
                 if lowercasedEmail != user.email {
@@ -28,10 +28,10 @@ class UserStore {
             }
             save()
         } else {
-            // Add default users (emails stored lowercased)
+            // 添加默认用户（邮箱以小写存储）
             users = [
                 User(email: "test@kixapp.com", username: "TestUser", password: "password"),
-                // Uncomment or extend defaults if needed
+                // 如需取消注释或扩展默认用户
                 // User(email: "manager@kixapp.com", username: "Manager", password: "password"),
                 // User(email: "guest@kixapp.com", username: "Guest", password: "password"),
             ]
@@ -46,7 +46,7 @@ class UserStore {
     }
     
     func addUser(_ user: User) {
-        // Ensure email stored in lowercase
+        // 确保邮箱以小写存储
         let normalized = User(email: user.email.lowercased(), username: user.username, password: user.password)
         users.append(normalized)
         save()

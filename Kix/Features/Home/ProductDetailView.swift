@@ -25,11 +25,11 @@ struct ProductDetailView: View {
                     .font(AppFont.title)
                     .padding(.top, 8)
                 
-                // BRAND (gradient) + PRICE CAPSULE ON RIGHT
+                // 品牌（渐变）+ 右侧价格胶囊
                 HStack {
                     Text(product.brand.uppercased())
                         .font(AppFont.sectionTitle)
-                        .bold() // slightly bolder
+                        .bold() // 稍微加粗
                         .foregroundStyle(brandGradient)
                     Spacer()
                     Text(String(format: "$%.2f", product.price))
@@ -42,12 +42,12 @@ struct ProductDetailView: View {
                         .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
                 }
                 
-                // Add to Cart aligned right under the price with brand colors
+                // 加入购物车按钮，右对齐，位于价格下方，使用品牌配色
                 HStack {
                     Spacer()
                     Button(action: {
                         showAddedToCart = true
-                        // TODO: Add to cart logic
+                        // TODO: 添加购物车逻辑
                     }) {
                         Label("Add to Cart", systemImage: "cart.badge.plus")
                             .font(.system(size: 16, weight: .semibold, design: .rounded))
@@ -61,7 +61,7 @@ struct ProductDetailView: View {
                     .accessibilityIdentifier("detail_add_to_cart_button")
                 }
                 
-                // DESCRIPTION SECTION
+                // 描述区域
                 VStack(alignment: .leading, spacing: 8) {
                     Text("DESCRIPTION")
                         .font(.system(size: 16, weight: .bold, design: .rounded))

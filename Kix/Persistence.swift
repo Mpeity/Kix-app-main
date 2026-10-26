@@ -2,7 +2,7 @@
 //  Persistence.swift
 //  Kix
 //
-//  Created by Konstanty Halets on 06/01/2026.
+//  由 Konstanty Halets 创建于 2026/01/06。
 //
 
 import CoreData
@@ -21,8 +21,8 @@ struct PersistenceController {
         do {
             try viewContext.save()
         } catch {
-            // Replace this implementation with code to handle the error appropriately.
-            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            // 用适当的错误处理代码替换此实现。
+            // fatalError() 会导致应用生成崩溃日志并终止。你不应在正式发布的应用中使用此函数，尽管在开发阶段可能会有用。
             #if DEBUG
             assertionFailure("Unresolved error: \(error)")
             #else
@@ -41,16 +41,16 @@ struct PersistenceController {
         }
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                // 用适当的错误处理代码替换此实现。
+                // fatalError() 会导致应用生成崩溃日志并终止。你不应在正式发布的应用中使用此函数，尽管在开发阶段可能会有用。
 
                 /*
-                 Typical reasons for an error here include:
-                 * The parent directory does not exist, cannot be created, or disallows writing.
-                 * The persistent store is not accessible, due to permissions or data protection when the device is locked.
-                 * The device is out of space.
-                 * The store could not be migrated to the current model version.
-                 Check the error message to determine what the actual problem was.
+                 此处出现错误的典型原因包括：
+                 * 父目录不存在、无法创建或不允许写入。
+                 * 由于权限或设备锁定时的数据保护，持久化存储不可访问。
+                 * 设备存储空间不足。
+                 * 存储无法迁移到当前模型版本。
+                 请检查错误信息以确定实际问题。
                  */
                 #if DEBUG
                 assertionFailure("Unresolved error: \(error), info: \(error.userInfo)")

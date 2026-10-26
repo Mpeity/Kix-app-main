@@ -18,7 +18,7 @@ struct MenuView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Header styled similar to Home
+                // 头部样式与首页一致
                 Text("Menu")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
                     .italic()
@@ -31,7 +31,7 @@ struct MenuView: View {
                     .accessibilityIdentifier("menu_header")
 
                 Form {
-                    // Profile section with navigation
+                    // 个人资料区域，可导航至详情页
                     Section(header: Text("Profile")) {
                         NavigationLink(destination: ProfileDetailView(user: user)) {
                             HStack {
@@ -54,7 +54,7 @@ struct MenuView: View {
                         .accessibilityIdentifier("profile_nav_link")
                     }
 
-                    // Settings section
+                    // 设置区域
                     Section(header: Text("Settings")) {
                         Toggle(isOn: $isDarkMode) {
                             Text("Dark Mode")
@@ -83,7 +83,7 @@ struct MenuView: View {
                         }
                     }
 
-                    // Push logout lower with styled button
+                    // 将登出按钮下推，使用样式化按钮
                     Section {
                         Button(action: { showLogoutAlert = true }) {
                             Text("Logout")
@@ -116,7 +116,7 @@ struct MenuView: View {
     }
 }
 
-// MARK: - Profile Detail View
+// MARK: - 个人资料详情页
 struct ProfileDetailView: View {
     @State var user: MenuUser
 

@@ -2,7 +2,7 @@
 //  KixApp.swift
 //  Kix
 //
-//  Created by Konstanty Halets on 06/01/2026.
+//  由 Konstanty Halets 创建于 2026/01/06。
 //
 
 import SwiftUI

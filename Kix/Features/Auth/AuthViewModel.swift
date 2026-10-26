@@ -14,7 +14,7 @@ class AuthViewModel: ObservableObject {
         if normalizedEmail.isEmpty || password.isEmpty {
             errorMessage = "Please enter email and password."
         } else {
-            // Use UserStore for case-insensitive check
+            // 使用 UserStore 进行不区分大小写的检查
             if UserStore.shared.user(email: normalizedEmail, password: password) != nil {
                 errorMessage = nil
                 completion()
@@ -31,7 +31,7 @@ class AuthViewModel: ObservableObject {
             errorMessage = "Passwords do not match."
         } else {
             errorMessage = nil
-            // Simulate registration success
+            // 模拟注册成功
             completion()
         }
     }

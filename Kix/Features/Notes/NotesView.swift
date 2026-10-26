@@ -10,7 +10,7 @@ struct NotesView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 12) {
-                // Back to Home
+                // 返回首页
                 HStack {
                     Button(action: {
                         tabSelection.selectedTab = 0
@@ -36,7 +36,7 @@ struct NotesView: View {
                     )
                     .accessibilityIdentifier("notes_title")
 
-                // Input row
+                // 输入行
                 HStack(spacing: 8) {
                     TextField("Come on, write something...", text: $newNoteText)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -65,7 +65,7 @@ struct NotesView: View {
                     .accessibilityIdentifier("notes_add_update_button")
                 }
 
-                // Content
+                // 内容区域
                 if notesManager.notes.isEmpty {
                     VStack(spacing: 12) {
                         Image(systemName: "note.text")
@@ -80,7 +80,7 @@ struct NotesView: View {
                             .foregroundColor(.secondary.opacity(0.8))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.bottom, 40) // Adjust visual center
+                    .padding(.bottom, 40) // 调整视觉居中
                 } else {
                     List {
                         ForEach(notesManager.notes) { note in

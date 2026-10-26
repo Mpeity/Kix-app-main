@@ -7,14 +7,14 @@ struct ProductCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             ZStack(alignment: .topTrailing) {
-                // Image with fallback
+                // 图片及回退处理
                 Group {
                     if let uiImage = UIImage(named: product.imageName) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFit()
                     } else {
-                        // Fallback placeholder
+                        // 回退占位符
                         RoundedRectangle(cornerRadius: 16)
                             .fill(Color.gray.opacity(0.2))
                             .overlay(
@@ -53,7 +53,7 @@ struct ProductCard: View {
                     .bold()
                 Spacer()
                 Button(action: {
-                    // TODO: Add to cart logic
+                    // TODO: 添加购物车逻辑
                 }) {
                     Image(systemName: "cart.badge.plus")
                         .foregroundColor(.accentGreen)

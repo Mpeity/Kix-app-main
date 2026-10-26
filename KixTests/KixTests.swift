@@ -2,7 +2,7 @@
 //  KixTests.swift
 //  KixTests
 //
-//  Created by Konstanty Halets on 06/01/2026.
+//  由 Konstanty Halets 创建于 2026/01/06。
 //
 
 import XCTest
@@ -11,25 +11,25 @@ import XCTest
 final class KixTests: XCTestCase {
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        // 在此处放置初始化代码。此方法在类中每个测试方法调用之前执行。
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        // 在此处放置清理代码。此方法在类中每个测试方法调用之后执行。
     }
 
     func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+        // 这是一个功能测试用例的示例。
+        // 使用 XCTAssert 及相关函数来验证测试是否产生正确结果。
+        // 你编写的任何 XCTest 测试都可以标记为 throws 和 async。
+        // 标记 throws 可在测试遇到未捕获错误时产生意外失败。
+        // 标记 async 可等待异步代码完成。之后通过断言检查结果。
     }
 
     func testPerformanceExample() throws {
-        // This is an example of a performance test case.
+        // 这是一个性能测试用例的示例。
         self.measure {
-            // Put the code you want to measure the time of here.
+            // 在此处放置你想要测量执行时间的代码。
         }
     }
 

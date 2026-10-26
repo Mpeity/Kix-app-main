@@ -2,7 +2,7 @@
 //  KixUITestsLaunchTests.swift
 //  KixUITests
 //
-//  Created by Konstanty Halets on 06/01/2026.
+//  由 Konstanty Halets 创建于 2026/01/06。
 //
 
 import XCTest
@@ -22,8 +22,8 @@ final class KixUITestsLaunchTests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        // Insert steps here to perform after app launch but before taking a screenshot,
-        // such as logging into a test account or navigating somewhere in the app
+        // 在此处插入应用启动后、截图前需要执行的步骤，
+        // 例如登录测试账户或在应用中导航到某个页面
 
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "Launch Screen"

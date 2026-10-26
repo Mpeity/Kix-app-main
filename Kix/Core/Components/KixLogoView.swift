@@ -3,21 +3,21 @@ import SwiftUI
 struct KixLogoView: View {
     var body: some View {
         ZStack {
-            // 1. Фон с градиентом (Синий, Фиолетовый, Зеленый)
+            // 1. 渐变背景（蓝色、紫色、绿色）
             LinearGradient(
                 colors: [Color.blue, Color.purple, Color.green.opacity(0.8)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             
-            // 2. Декоративные "жидкие" элементы (Розовые акценты)
+            // 2. 装饰性"液态"元素（粉色点缀）
             Circle()
                 .fill(Color.pink.opacity(0.4))
                 .frame(width: 600, height: 600)
                 .offset(x: 200, y: -300)
                 .blur(radius: 80)
             
-            // 3. Эффект зеркального отражения (Liquid Mirror)
+            // 3. 镜面反射效果（液态镜面）
             GeometryReader { geo in
                 Path { path in
                     path.move(to: CGPoint(x: 0, y: 0))
@@ -38,11 +38,11 @@ struct KixLogoView: View {
                 )
             }
             
-            // 4. Текст KIX (Широкий, закругленный, белый)
+            // 4. KIX 文字（加宽、圆角、白色）
             VStack(spacing: -10) {
                 Text("KIX")
                     .font(.system(size: 280, weight: .black, design: .rounded))
-                    .kerning(10) // Делаем строки чуть шире
+                    .kerning(10) // 让字母稍微加宽
                     .italic()
                     .foregroundStyle(
                         .white.shadow(.inner(color: .black.opacity(0.2), radius: 5, x: 2, y: 2))
@@ -55,11 +55,11 @@ struct KixLogoView: View {
             }
         }
         .frame(width: 1024, height: 1024)
-        .clipShape(RoundedRectangle(cornerRadius: 220, style: .continuous)) // Стандарт iOS иконки
+        .clipShape(RoundedRectangle(cornerRadius: 220, style: .continuous)) // 标准 iOS 图标形状
     }
 }
 
-// Предпросмотр
+// 预览
 struct KixLogo_Previews: PreviewProvider {
     static var previews: some View {
         KixLogoView()
