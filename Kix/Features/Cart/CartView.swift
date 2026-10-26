@@ -42,111 +42,128 @@ struct CartView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.top, 12)
                 } else {
-                    List {
-                        Section(header: Text("商品").font(.headline)) {
-                            ForEach(cartManager.items) { item in
-                                HStack {
-                                    if let uiImage = UIImage(named: item.product.imageName) {
-                                        Image(uiImage: uiImage)
-                                            .resizable()
-                                            .scaledToFill()
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            // 商品列表
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("商品")
+                                    .font(.headline)
+                                    .padding(.horizontal)
+                                
+                                ForEach(cartManager.items) { item in
+                                    HStack(spacing: 12) {
+                                        if let uiImage = UIImage(named: item.product.imageName) {
+                                            Image(uiImage: uiImage)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 60, height: 60)
+                                                .clipped()
+                                                .cornerRadius(10)
+                                        } else {
+                                            ZStack {
+                                                Color(.systemGray6)
+                                                Image(systemName: "shoeprints.fill")
+                                                    .font(.system(size: 20))
+                                                    .foregroundColor(.secondary)
+                                            }
                                             .frame(width: 60, height: 60)
-                                            .clipped()
                                             .cornerRadius(10)
-                                    } else {
-                                        ZStack {
-                                            Color(.systemGray6)
-                                            Image(systemName: "shoeprints.fill")
-                                                .font(.system(size: 20))
+                                        }
+                                        
+                                        VStack(alignment: .leading) {
+                                            Text(item.product.name)
+                                                .font(.headline)
+                                            Text(item.product.brand)
+                                                .font(.subheadline)
                                                 .foregroundColor(.secondary)
+                                            Text("$\(String(format: "%.2f", item.product.price))")
+                                                .font(.caption)
                                         }
-                                        .frame(width: 60, height: 60)
-                                        .cornerRadius(10)
-                                    }
-                                    
-                                    VStack(alignment: .leading) {
-                                        Text(item.product.name)
-                                            .font(.headline)
-                                        Text(item.product.brand)
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                        Text("$\(String(format: "%.2f", item.product.price))")
-                                            .font(.caption)
-                                    }
-                                    Spacer()
-                                    HStack(spacing: 8) {
-                                        Button(action: { cartManager.decreaseQuantity(item: item) }) {
-                                            Image(systemName: "minus.circle.fill").foregroundColor(.purple)
+                                        Spacer()
+                                        HStack(spacing: 8) {
+                                            Button(action: { cartManager.decreaseQuantity(item: item) }) {
+                                                Image(systemName: "minus.circle.fill")
+                                                    .foregroundColor(.purple)
+                                                    .font(.system(size: 24))
+                                            }
+                                            .accessibilityIdentifier("decrease_quantity_button_\(item.id)")
+                                            Text("\(item.quantity)")
+                                                .frame(width: 24)
+                                                .font(.headline)
+                                            Button(action: { cartManager.increaseQuantity(item: item) }) {
+                                                Image(systemName: "plus.circle.fill")
+                                                    .foregroundColor(.blue)
+                                                    .font(.system(size: 24))
+                                            }
+                                            .accessibilityIdentifier("increase_quantity_button_\(item.id)")
                                         }
-                                        .accessibilityIdentifier("decrease_quantity_button_\(item.id)")
-                                        Text("\(item.quantity)")
-                                            .frame(width: 24)
-                                            .font(.headline)
-                                        Button(action: { cartManager.increaseQuantity(item: item) }) {
-                                            Image(systemName: "plus.circle.fill").foregroundColor(.blue)
+                                        Button(action: { cartManager.removeFromCart(item: item) }) {
+                                            Image(systemName: "trash")
+                                                .foregroundColor(.red)
+                                                .font(.system(size: 20))
                                         }
-                                        .accessibilityIdentifier("increase_quantity_button_\(item.id)")
+                                        .accessibilityIdentifier("remove_cart_item_button_\(item.id)")
                                     }
-                                    Button(action: { cartManager.removeFromCart(item: item) }) {
-                                        Image(systemName: "trash").foregroundColor(.red)
-                                    }
-                                    .accessibilityIdentifier("remove_cart_item_button_\(item.id)")
-                                    .swipeActions(edge: .trailing) {
-                                        Button(role: .destructive) { cartManager.removeFromCart(item: item) } label: {
-                                            Label("删除", systemImage: "trash")
-                                        }
-                                    }
+                                    .padding(.horizontal)
+                                    .padding(.vertical, 8)
+                                    .background(Color(.systemBackground))
+                                    .cornerRadius(12)
+                                    .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
                                 }
                             }
-                        }
-                        
-                        Section(header: Text("支付方式").font(.headline)) {
-                            if paymentManager.methods.isEmpty {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("暂无支付方式")
-                                        .foregroundColor(.secondary)
+                            
+                            // 支付方式
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("支付方式")
+                                    .font(.headline)
+                                    .padding(.horizontal)
+                                
+                                if paymentManager.methods.isEmpty {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("暂无支付方式")
+                                            .foregroundColor(.secondary)
+                                        Button {
+                                            showAddCardSheet = true
+                                        } label: {
+                                            Label("添加测试卡片", systemImage: "creditcard")
+                                        }
+                                        .accessibilityIdentifier("add_test_card_button")
+                                    }
+                                    .padding(.horizontal)
+                                } else {
+                                    ForEach(paymentManager.methods) { method in
+                                        HStack {
+                                            Image(systemName: iconName(for: method.brand))
+                                                .foregroundColor(.blue)
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text(method.brand.rawValue + " • " + method.numberMasked)
+                                                    .font(.subheadline)
+                                                Text(method.holderName)
+                                                    .font(.caption)
+                                                    .foregroundColor(.secondary)
+                                            }
+                                            Spacer()
+                                            if paymentManager.selectedMethodID == method.id {
+                                                Image(systemName: "checkmark.circle.fill").foregroundColor(.green)
+                                            }
+                                        }
+                                        .contentShape(Rectangle())
+                                        .onTapGesture { paymentManager.select(method) }
+                                        .padding(.horizontal)
+                                        .padding(.vertical, 8)
+                                    }
                                     Button {
                                         showAddCardSheet = true
                                     } label: {
-                                        Label("添加测试卡片", systemImage: "creditcard")
+                                        Label("再添加一张测试卡片", systemImage: "plus.circle")
                                     }
-                                    .accessibilityIdentifier("add_test_card_button")
+                                    .accessibilityIdentifier("add_another_test_card_button")
+                                    .padding(.horizontal)
                                 }
-                            } else {
-                                ForEach(paymentManager.methods) { method in
-                                    HStack {
-                                        Image(systemName: iconName(for: method.brand))
-                                            .foregroundColor(.blue)
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text(method.brand.rawValue + " • " + method.numberMasked)
-                                                .font(.subheadline)
-                                            Text(method.holderName)
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
-                                        }
-                                        Spacer()
-                                        if paymentManager.selectedMethodID == method.id {
-                                            Image(systemName: "checkmark.circle.fill").foregroundColor(.green)
-                                        }
-                                    }
-                                    .contentShape(Rectangle())
-                                    .onTapGesture { paymentManager.select(method) }
-                                    .swipeActions(edge: .trailing) {
-                                        Button(role: .destructive) { showingDeleteAlert = method } label: {
-                                            Label("删除", systemImage: "trash")
-                                        }
-                                    }
-                                }
-                                Button {
-                                    showAddCardSheet = true
-                                } label: {
-                                    Label("再添加一张测试卡片", systemImage: "plus.circle")
-                                }
-                                .accessibilityIdentifier("add_another_test_card_button")
                             }
                         }
+                        .padding(.vertical)
                     }
-                    .listStyle(InsetGroupedListStyle())
                     
                     VStack(spacing: 12) {
                         HStack {
