@@ -49,7 +49,7 @@ struct ProductDetailView: View {
                         showAddedToCart = true
                         // TODO: 添加购物车逻辑
                     }) {
-                        Label("Add to Cart", systemImage: "cart.badge.plus")
+                        Label("加入购物车", systemImage: "cart.badge.plus")
                             .font(.system(size: 16, weight: .semibold, design: .rounded))
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
@@ -63,20 +63,20 @@ struct ProductDetailView: View {
                 
                 // 描述区域
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("DESCRIPTION")
+                    Text("商品描述")
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
                     Text(product.description)
                         .font(AppFont.body)
                         .foregroundColor(.primary)
-                    Text("Purpose: Built for runners who want a confident daily trainer — mixing cushioned comfort with stable transitions. Great for road mileage, recovery days, and tempo efforts. The engineered upper provides breathable support; the midsole geometry keeps your stride smooth and efficient.")
+                    Text("用途：为追求自信日常训练的跑者打造——融合缓震舒适与稳定过渡。适合公路跑量、恢复跑和节奏跑。工程网面鞋面提供透气支撑；中底几何结构让步伐流畅高效。")
                         .font(AppFont.body)
                         .foregroundColor(.secondary)
                 }
                 .padding(.top, 4)
                 
                 if showAddedToCart {
-                    Text("Added to cart!")
+                    Text("已加入购物车！")
                         .foregroundColor(.accentGreen)
                         .font(.caption)
                         .transition(.opacity)

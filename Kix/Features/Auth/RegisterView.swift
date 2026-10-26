@@ -42,7 +42,7 @@ struct RegisterView: View {
                                 .mask(LinearGradient(colors: [.white, .clear], startPoint: .top, endPoint: .center))
                         )
                     
-                    Text("SNEAKER STORE")
+                    Text("球鞋商店")
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                         .tracking(6)
                         .foregroundColor(.gray.opacity(0.6))
@@ -50,29 +50,29 @@ struct RegisterView: View {
                 .padding(.bottom, 20)
                 
                 // 2. 欢迎文字
-                Text("Join KIX Family")
+                Text("加入 KIX 大家庭")
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundColor(.black.opacity(0.8))
                 
                 // 3. "液态"风格输入框（与 LoginView 一致）
                 VStack(spacing: 18) {
-                    customField(title: "Email", text: $email, isSecure: false)
+                    customField(title: "邮箱", text: $email, isSecure: false)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
                         .keyboardType(.emailAddress)
                         .accessibilityIdentifier("register_email_field")
                     
-                    customField(title: "Username", text: $username, isSecure: false)
+                    customField(title: "用户名", text: $username, isSecure: false)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
                         .accessibilityIdentifier("register_username_field")
                     
-                    customField(title: "Password", text: $password, isSecure: true)
+                    customField(title: "密码", text: $password, isSecure: true)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
                         .accessibilityIdentifier("register_password_field")
                     
-                    customField(title: "Confirm Password", text: $confirmPassword, isSecure: true)
+                    customField(title: "确认密码", text: $confirmPassword, isSecure: true)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
                         .accessibilityIdentifier("register_confirm_password_field")
@@ -87,11 +87,11 @@ struct RegisterView: View {
                 // 4. 带液态镜面效果的注册按钮（与 LoginView 一致）
                 Button(action: {
                     if email.isEmpty || username.isEmpty || password.isEmpty || confirmPassword.isEmpty {
-                        errorMessage = "Please fill all fields."
+                        errorMessage = "请填写所有字段。"
                     } else if password != confirmPassword {
-                        errorMessage = "Passwords do not match."
+                        errorMessage = "两次密码不一致。"
                     } else if UserStore.shared.userExists(email: email) {
-                        errorMessage = "User already exists."
+                        errorMessage = "用户已存在。"
                     } else {
                         let user = User(email: email, username: username, password: password)
                         UserStore.shared.addUser(user)
@@ -100,7 +100,7 @@ struct RegisterView: View {
                         dismiss()
                     }
                 }) {
-                    Text("CREATE ACCOUNT")
+                    Text("创建账号")
                         .font(.system(size: 18, weight: .bold, design: .rounded))
                         .kerning(2)
                         .foregroundColor(.white)
@@ -116,9 +116,9 @@ struct RegisterView: View {
                 // 5. 登录按钮
                 Button(action: { dismiss() }) {
                     HStack {
-                        Text("Already have an account?")
+                        Text("已有账号？")
                             .foregroundColor(.gray)
-                        Text("Sign In")
+                        Text("去登录")
                             .fontWeight(.bold)
                             .foregroundStyle(brandGradient)
                     }
@@ -150,7 +150,7 @@ struct RegisterView: View {
                 SecureField(title, text: text)
             } else {
                 TextField(title, text: text)
-                    .keyboardType(title == "Email" ? .emailAddress : .default)
+                    .keyboardType(title == "邮箱" ? .emailAddress : .default)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled(true)
             }

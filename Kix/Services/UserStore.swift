@@ -30,10 +30,10 @@ class UserStore {
         } else {
             // 添加默认用户（邮箱以小写存储）
             users = [
-                User(email: "test@kixapp.com", username: "TestUser", password: "password"),
+                User(email: "test@kixapp.com", username: "测试用户", password: "password"),
                 // 如需取消注释或扩展默认用户
-                // User(email: "manager@kixapp.com", username: "Manager", password: "password"),
-                // User(email: "guest@kixapp.com", username: "Guest", password: "password"),
+                // User(email: "manager@kixapp.com", username: "管理员", password: "password"),
+                // User(email: "guest@kixapp.com", username: "访客", password: "password"),
             ]
             save()
         }
@@ -63,7 +63,7 @@ class UserStore {
     }
     
     func reset() {
-        users = [User(email: "test@kixapp.com", username: "TestUser", password: "password")]
+        users = [User(email: "test@kixapp.com", username: "测试用户", password: "password")]
         save()
     }
 }

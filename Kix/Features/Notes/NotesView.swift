@@ -17,7 +17,7 @@ struct NotesView: View {
                     }) {
                         HStack(spacing: 6) {
                             Image(systemName: "chevron.left")
-                            Text("Back")
+                            Text("返回")
                         }
                     }
                     .accessibilityIdentifier("notes_back_button")
@@ -26,7 +26,7 @@ struct NotesView: View {
                 }
                 .padding(.top, 10)
 
-                Text("Notes")
+                Text("笔记")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
                     .italic()
                     .foregroundStyle(
@@ -38,7 +38,7 @@ struct NotesView: View {
 
                 // 输入行
                 HStack(spacing: 8) {
-                    TextField("Come on, write something...", text: $newNoteText)
+                    TextField("快来写点什么吧...", text: $newNoteText)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .textInputAutocapitalization(.sentences)
                         .disableAutocorrection(false)
@@ -48,7 +48,7 @@ struct NotesView: View {
                         .accessibilityIdentifier("notes_input_field")
 
                     Button(action: addOrUpdateNote) {
-                        Text(editingNote == nil ? "Add" : "Update")
+                        Text(editingNote == nil ? "添加" : "更新")
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .padding(.vertical, 10)
                             .padding(.horizontal, 16)
@@ -71,11 +71,11 @@ struct NotesView: View {
                         Image(systemName: "note.text")
                             .font(.system(size: 40))
                             .foregroundColor(.purple.opacity(0.6))
-                        Text("Nothing here yet")
+                        Text("暂无笔记")
                             .font(.system(size: 18, weight: .medium, design: .rounded))
                             .foregroundColor(.secondary)
                             .accessibilityIdentifier("notes_empty_label")
-                        Text("Add notes to test CRUD behavior")
+                        Text("添加笔记来测试增删改查功能")
                             .font(.system(size: 14, design: .rounded))
                             .foregroundColor(.secondary.opacity(0.8))
                     }

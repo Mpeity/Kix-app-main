@@ -48,7 +48,7 @@ struct KixLogoView: View {
                         .white.shadow(.inner(color: .black.opacity(0.2), radius: 5, x: 2, y: 2))
                     )
                 
-                Text("SNEAKER STORE")
+                Text("球鞋商店")
                     .font(.system(size: 40, weight: .bold, design: .rounded))
                     .tracking(15)
                     .foregroundStyle(.white.opacity(0.9))

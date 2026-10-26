@@ -22,7 +22,7 @@ struct ProductCard: View {
                                     Image(systemName: "photo")
                                         .font(.largeTitle)
                                         .foregroundColor(.gray)
-                                    Text("No Image")
+                                    Text("暂无图片")
                                         .font(.caption)
                                         .foregroundColor(.gray)
                                 }

@@ -26,7 +26,7 @@ final class KixUITestsLaunchTests: XCTestCase {
         // 例如登录测试账户或在应用中导航到某个页面
 
         let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "Launch Screen"
+        attachment.name = "启动页"
         attachment.lifetime = .keepAlways
         add(attachment)
     }

@@ -38,7 +38,7 @@ struct LoginView: View {
                                 .mask(LinearGradient(colors: [.white, .clear], startPoint: .top, endPoint: .center))
                         )
                     
-                    Text("SNEAKER STORE")
+                    Text("球鞋商店")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .tracking(8)
                         .foregroundColor(.gray.opacity(0.6))
@@ -46,13 +46,13 @@ struct LoginView: View {
                 .padding(.bottom, 30)
                 
                 // 2. 欢迎文字
-                Text("Welcome Back")
+                Text("欢迎回来")
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundColor(.black.opacity(0.8))
                 
                 // 3. "液态"风格输入框（柔和圆角）
                 VStack(spacing: 18) {
-                    customField(title: "Email", text: $viewModel.email, isSecure: false)
+                    customField(title: "邮箱", text: $viewModel.email, isSecure: false)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
                         .keyboardType(.emailAddress)
@@ -62,12 +62,12 @@ struct LoginView: View {
                     HStack(spacing: 12) {
                         Group {
                             if showPassword {
-                                TextField("Password", text: $viewModel.password)
+                                TextField("密码", text: $viewModel.password)
                                     .textContentType(.password)
                                     .textInputAutocapitalization(.never)
                                     .autocorrectionDisabled(true)
                             } else {
-                                SecureField("Password", text: $viewModel.password)
+                                SecureField("密码", text: $viewModel.password)
                                     .textContentType(.password)
                                     .textInputAutocapitalization(.never)
                                     .autocorrectionDisabled(true)
@@ -78,7 +78,7 @@ struct LoginView: View {
                         Button(action: { showPassword.toggle() }) {
                             Image(systemName: showPassword ? "eye.slash.fill" : "eye.fill")
                                 .foregroundColor(.gray)
-                                .accessibilityLabel(showPassword ? "Hide password" : "Show password")
+                                .accessibilityLabel(showPassword ? "隐藏密码" : "显示密码")
                         }
                     }
                     .padding(.horizontal, 20)
@@ -103,7 +103,7 @@ struct LoginView: View {
                         appState.isAuthenticated = true
                     }
                 }) {
-                    Text("SIGN IN")
+                    Text("登录")
                         .font(.system(size: 18, weight: .bold, design: .rounded))
                         .kerning(2)
                         .foregroundColor(.white)
@@ -119,9 +119,9 @@ struct LoginView: View {
                 // 5. 注册按钮
                 Button(action: { showRegister = true }) {
                     HStack {
-                        Text("New here?")
+                        Text("第一次来？")
                             .foregroundColor(.gray)
-                        Text("Create Account")
+                        Text("创建账号")
                             .fontWeight(.bold)
                             .foregroundStyle(brandGradient)
                     }

@@ -13,7 +13,7 @@ struct CartView: View {
             VStack(alignment: .leading, spacing: 0) {
                 // 头部
                 HStack { Spacer() }
-                Text("Your Cart")
+                Text("购物车")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
                     .italic()
                     .foregroundStyle(
@@ -31,11 +31,11 @@ struct CartView: View {
                         Image(systemName: "cart")
                             .font(.system(size: 42))
                             .foregroundColor(.secondary)
-                        Text("Your cart is empty")
+                        Text("购物车是空的")
                             .font(.headline)
                             .foregroundColor(.secondary)
                             .accessibilityIdentifier("cart_empty_label")
-                        Text("Add your favorite shoes from Home")
+                        Text("去首页添加你喜欢的鞋子吧")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
@@ -43,7 +43,7 @@ struct CartView: View {
                     .padding(.top, 12)
                 } else {
                     List {
-                        Section(header: Text("Items").font(.headline)) {
+                        Section(header: Text("商品").font(.headline)) {
                             ForEach(cartManager.items) { item in
                                 HStack {
                                     if let uiImage = UIImage(named: item.product.imageName) {
@@ -93,22 +93,22 @@ struct CartView: View {
                                     .accessibilityIdentifier("remove_cart_item_button_\(item.id)")
                                     .swipeActions(edge: .trailing) {
                                         Button(role: .destructive) { cartManager.removeFromCart(item: item) } label: {
-                                            Label("Delete", systemImage: "trash")
+                                            Label("删除", systemImage: "trash")
                                         }
                                     }
                                 }
                             }
                         }
                         
-                        Section(header: Text("Payment").font(.headline)) {
+                        Section(header: Text("支付方式").font(.headline)) {
                             if paymentManager.methods.isEmpty {
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Text("No payment methods")
+                                    Text("暂无支付方式")
                                         .foregroundColor(.secondary)
                                     Button {
                                         showAddCardSheet = true
                                     } label: {
-                                        Label("Add Test Card", systemImage: "creditcard")
+                                        Label("添加测试卡片", systemImage: "creditcard")
                                     }
                                     .accessibilityIdentifier("add_test_card_button")
                                 }
@@ -133,14 +133,14 @@ struct CartView: View {
                                     .onTapGesture { paymentManager.select(method) }
                                     .swipeActions(edge: .trailing) {
                                         Button(role: .destructive) { showingDeleteAlert = method } label: {
-                                            Label("Delete", systemImage: "trash")
+                                            Label("删除", systemImage: "trash")
                                         }
                                     }
                                 }
                                 Button {
                                     showAddCardSheet = true
                                 } label: {
-                                    Label("Add Another Test Card", systemImage: "plus.circle")
+                                    Label("再添加一张测试卡片", systemImage: "plus.circle")
                                 }
                                 .accessibilityIdentifier("add_another_test_card_button")
                             }
@@ -150,14 +150,14 @@ struct CartView: View {
                     
                     VStack(spacing: 12) {
                         HStack {
-                            Text("Total:").font(.title2)
+                            Text("合计：").font(.title2)
                             Spacer()
                             Text("$\(String(format: "%.2f", cartManager.totalPrice()))")
                                 .font(.title2).bold()
                                 .accessibilityIdentifier("cart_total_price")
                         }
                         Button(action: { showCheckoutAlert = true }) {
-                            Text("Proceed to Checkout")
+                            Text("去结算")
                                 .font(.system(size: 18, weight: .bold, design: .rounded))
                                 .kerning(1)
                                 .frame(maxWidth: .infinity)
@@ -175,7 +175,7 @@ struct CartView: View {
                     }
                     .padding([.horizontal, .bottom])
                     .alert(isPresented: $showCheckoutAlert) {
-                        Alert(title: Text("Checkout"), message: Text(checkoutMessage()), dismissButton: .default(Text("OK"), action: {
+                        Alert(title: Text("结算"), message: Text(checkoutMessage()), dismissButton: .default(Text("确定"), action: {
                             cartManager.clearCart()
                         }))
                     }
@@ -188,7 +188,7 @@ struct CartView: View {
                         Button(role: .destructive) {
                             showClearCartAlert = true
                         } label: {
-                            Label("Clear Cart", systemImage: "trash")
+                            Label("清空购物车", systemImage: "trash")
                         }
                         .accessibilityIdentifier("clear_cart_button")
                     }
@@ -202,17 +202,17 @@ struct CartView: View {
             .presentationDetents([.height(300), .medium])
         }
         .alert(item: $showingDeleteAlert) { method in
-            Alert(title: Text("Remove card?"), message: Text("This will remove \(method.brand.rawValue) ending \(method.numberMasked.suffix(4))."), primaryButton: .destructive(Text("Remove"), action: {
+            Alert(title: Text("移除卡片？"), message: Text("将移除尾号为 \(method.numberMasked.suffix(4)) 的 \(method.brand.rawValue)。"), primaryButton: .destructive(Text("移除"), action: {
                 paymentManager.remove(method)
             }), secondaryButton: .cancel())
         }
-        .alert("Clear all items?", isPresented: $showClearCartAlert) {
-            Button("Cancel", role: .cancel) {}
-            Button("Remove All", role: .destructive) {
+        .alert("清空所有商品？", isPresented: $showClearCartAlert) {
+            Button("取消", role: .cancel) {}
+            Button("全部移除", role: .destructive) {
                 cartManager.clearCart()
             }
         } message: {
-            Text("This will remove all items from your cart.")
+            Text("将清空购物车中的所有商品。")
         }
     }
     
@@ -227,9 +227,9 @@ struct CartView: View {
     
     private func checkoutMessage() -> String {
         guard let method = paymentManager.selectedMethod else {
-            return "Please add and select a payment method."
+            return "请先添加并选择一种支付方式。"
         }
-        return "Paid with \(method.brand.rawValue) (\(method.numberMasked)). Order placed! (mock)"
+        return "已通过 \(method.brand.rawValue)（\(method.numberMasked)）支付。下单成功！（模拟）"
     }
 }
 
@@ -242,7 +242,7 @@ struct AddTestCardSheet: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                Picker("Brand", selection: $selectedBrand) {
+                Picker("品牌", selection: $selectedBrand) {
                     ForEach([CardBrand.visa, .masterCard], id: \.id) { brand in
                         Text(brand.rawValue).tag(brand)
                     }
@@ -251,7 +251,7 @@ struct AddTestCardSheet: View {
                 .padding(.horizontal)
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Test number")
+                    Text("测试卡号")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Text(selectedBrand.testNumber)
@@ -269,7 +269,7 @@ struct AddTestCardSheet: View {
                     onAdd(selectedBrand)
                     dismiss()
                 } label: {
-                    Label("Add Test \(selectedBrand.rawValue)", systemImage: "creditcard.fill")
+                    Label("添加测试\(selectedBrand.rawValue)", systemImage: "creditcard.fill")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .foregroundColor(.white)
@@ -278,11 +278,11 @@ struct AddTestCardSheet: View {
                 }
                 .padding()
             }
-            .navigationTitle("Add Test Card")
+            .navigationTitle("添加测试卡片")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button("关闭") { dismiss() }
                 }
             }
         }

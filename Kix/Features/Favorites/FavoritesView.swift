@@ -8,7 +8,7 @@ struct FavoritesView: View {
         NavigationView {
             VStack(alignment: .center, spacing: 0) {
                 // 头部居中，使用渐变效果与首页风格一致
-                Text("Favorites")
+                Text("收藏")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
                     .italic()
                     .foregroundStyle(
@@ -27,11 +27,11 @@ struct FavoritesView: View {
                         Image(systemName: "heart")
                             .font(.system(size: 40, weight: .semibold))
                             .foregroundColor(.purple.opacity(0.7))
-                        Text("Nothing here yet")
+                        Text("暂无收藏")
                             .font(.system(size: 16, weight: .semibold, design: .rounded))
                             .foregroundColor(.secondary)
                             .accessibilityIdentifier("favorites_empty_label")
-                        Text("Add your favorite shoes from Home")
+                        Text("去首页添加你喜欢的鞋子吧")
                             .font(.system(size: 14, weight: .regular, design: .rounded))
                             .foregroundColor(.secondary)
                     }

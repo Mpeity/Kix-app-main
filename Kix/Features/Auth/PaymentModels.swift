@@ -41,7 +41,7 @@ final class PaymentManager: ObservableObject {
     @Published private(set) var methods: [PaymentMethod] = []
     @Published var selectedMethodID: UUID? = nil
     
-    func addTestCard(brand: CardBrand, holderName: String = "Test User", expiryMonth: Int = 12, expiryYear: Int = 2030) {
+    func addTestCard(brand: CardBrand, holderName: String = "测试用户", expiryMonth: Int = 12, expiryYear: Int = 2030) {
         let masked = Self.mask(cardNumber: brand.testNumber)
         let method = PaymentMethod(brand: brand, holderName: holderName, numberMasked: masked, expiryMonth: expiryMonth, expiryYear: expiryYear)
         methods.append(method)

@@ -21,7 +21,7 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     // --- 头部 ---
                     VStack(alignment: .center, spacing: 4) {
-                        Text("THE KIX LIST")
+                        Text("KIX 精选")
                             .font(.system(size: 32, weight: .bold, design: .rounded))
                             .italic()
                             .foregroundStyle(
@@ -30,7 +30,7 @@ struct HomeView: View {
                                                endPoint: .trailing)
                             )
                             .frame(maxWidth: .infinity, alignment: .center)
-                        Text("Curated Performance Shoes")
+                        Text("精选高性能跑鞋")
                             .font(.system(size: 14, weight: .semibold, design: .rounded))
                             .foregroundColor(.gray)
                             .frame(maxWidth: .infinity, alignment: .center)
@@ -77,34 +77,34 @@ struct HomeView: View {
             .sheet(isPresented: $showAddSheet) {
                 NavigationView {
                     Form {
-                        Section(header: Text("Name")) {
-                            TextField("e.g. Vaporfly 3", text: $newName)
+                        Section(header: Text("名称")) {
+                            TextField("例如 Vaporfly 3", text: $newName)
                         }
-                        Section(header: Text("Brand")) {
-                            TextField("e.g. Nike", text: $newBrand)
+                        Section(header: Text("品牌")) {
+                            TextField("例如 Nike", text: $newBrand)
                         }
-                        Section(header: Text("Price")) {
-                            TextField("e.g. 199.99", text: $newPriceText)
+                        Section(header: Text("价格")) {
+                            TextField("例如 199.99", text: $newPriceText)
                                 .keyboardType(.decimalPad)
                         }
-                        Section(header: Text("Description")) {
+                        Section(header: Text("描述")) {
                             TextEditor(text: $newDescription)
                                 .frame(minHeight: 100)
                         }
-                        Section(header: Text("Image Name (asset)")) {
-                            TextField("e.g. vaporfly3", text: $newImageName)
+                        Section(header: Text("图片名称（资源）")) {
+                            TextField("例如 vaporfly3", text: $newImageName)
                         }
                     }
-                    .navigationTitle("New Sneaker")
+                    .navigationTitle("新增球鞋")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel") {
+                            Button("取消") {
                                 showAddSheet = false
                             }
                         }
                         ToolbarItem(placement: .confirmationAction) {
-                            Button("Save") {
+                            Button("保存") {
                                 let trimmedName = newName.trimmingCharacters(in: .whitespacesAndNewlines)
                                 let trimmedBrand = newBrand.trimmingCharacters(in: .whitespacesAndNewlines)
                                 let price = Double(newPriceText.replacingOccurrences(of: ",", with: ".")) ?? -1
@@ -176,7 +176,7 @@ struct NewProductCard: View {
                             Image(systemName: "shoeprints.fill")
                                 .font(.system(size: 50))
                                 .foregroundColor(.gray.opacity(0.35))
-                            Text("NO IMAGE")
+                            Text("暂无图片")
                                 .font(.caption2)
                                 .bold()
                                 .foregroundColor(.gray.opacity(0.45))
@@ -251,17 +251,17 @@ struct NewProductCard: View {
                 withAnimation(.easeInOut(duration: 0.1)) { isPressed = false }
             }
         }
-        .confirmationDialog("Actions", isPresented: $showMenu, titleVisibility: .automatic) {
-            Button("View") { showDetail = true }
-            Button("Edit") { showEditSheet = true }
-            Button("Delete", role: .destructive) { showDeleteConfirm = true }
-            Button("Cancel", role: .cancel) {}
+        .confirmationDialog("操作", isPresented: $showMenu, titleVisibility: .automatic) {
+            Button("查看") { showDetail = true }
+            Button("编辑") { showEditSheet = true }
+            Button("删除", role: .destructive) { showDeleteConfirm = true }
+            Button("取消", role: .cancel) {}
         }
-        .alert("Delete item?", isPresented: $showDeleteConfirm) {
-            Button("Delete", role: .destructive) { onDelete() }
-            Button("Cancel", role: .cancel) {}
+        .alert("删除商品？", isPresented: $showDeleteConfirm) {
+            Button("删除", role: .destructive) { onDelete() }
+            Button("取消", role: .cancel) {}
         } message: {
-            Text("This action cannot be undone.")
+            Text("此操作无法撤销。")
         }
         .sheet(isPresented: $showDetail) {
             ProductDetailView(product: product)
@@ -295,26 +295,26 @@ private struct EditProductSheet: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Name")) {
-                    TextField("Name", text: $name)
+                Section(header: Text("名称")) {
+                    TextField("名称", text: $name)
                 }
-                Section(header: Text("Price")) {
-                    TextField("e.g. 159.99", text: $priceText)
+                Section(header: Text("价格")) {
+                    TextField("例如 159.99", text: $priceText)
                         .keyboardType(.decimalPad)
                 }
-                Section(header: Text("Description")) {
+                Section(header: Text("描述")) {
                     TextEditor(text: $desc)
                         .frame(minHeight: 120)
                 }
             }
-            .navigationTitle("Edit Sneaker")
+            .navigationTitle("编辑球鞋")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("取消") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button("保存") {
                         let price = Double(priceText.replacingOccurrences(of: ",", with: ".")) ?? original.price
                         let updated = Product(
                             id: original.id,

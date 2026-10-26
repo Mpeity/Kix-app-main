@@ -12,23 +12,23 @@ class AuthViewModel: ObservableObject {
     func login(completion: @escaping () -> Void) {
         let normalizedEmail = email.lowercased()
         if normalizedEmail.isEmpty || password.isEmpty {
-            errorMessage = "Please enter email and password."
+            errorMessage = "请输入邮箱和密码。"
         } else {
             // 使用 UserStore 进行不区分大小写的检查
             if UserStore.shared.user(email: normalizedEmail, password: password) != nil {
                 errorMessage = nil
                 completion()
             } else {
-                errorMessage = "Invalid credentials."
+                errorMessage = "邮箱或密码错误。"
             }
         }
     }
     
     func register(completion: () -> Void) {
         if email.isEmpty || username.isEmpty || password.isEmpty || confirmPassword.isEmpty {
-            errorMessage = "Please fill all fields."
+            errorMessage = "请填写所有字段。"
         } else if password != confirmPassword {
-            errorMessage = "Passwords do not match."
+            errorMessage = "两次密码不一致。"
         } else {
             errorMessage = nil
             // 模拟注册成功

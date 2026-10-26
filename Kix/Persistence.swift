@@ -24,9 +24,9 @@ struct PersistenceController {
             // 用适当的错误处理代码替换此实现。
             // fatalError() 会导致应用生成崩溃日志并终止。你不应在正式发布的应用中使用此函数，尽管在开发阶段可能会有用。
             #if DEBUG
-            assertionFailure("Unresolved error: \(error)")
+            assertionFailure("未解决的错误：\(error)")
             #else
-            print("Unresolved error: \(error)")
+            print("未解决的错误：\(error)")
             #endif
         }
         return result
@@ -53,9 +53,9 @@ struct PersistenceController {
                  请检查错误信息以确定实际问题。
                  */
                 #if DEBUG
-                assertionFailure("Unresolved error: \(error), info: \(error.userInfo)")
+                assertionFailure("未解决的错误：\(error)，信息：\(error.userInfo)")
                 #else
-                print("Unresolved error: \(error), info: \(error.userInfo)")
+                print("未解决的错误：\(error)，信息：\(error.userInfo)")
                 #endif
             }
         })

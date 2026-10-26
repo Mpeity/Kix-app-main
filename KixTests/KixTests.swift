@@ -35,8 +35,8 @@ final class KixTests: XCTestCase {
 
     func testCartCalculations() throws {
         let cartManager = CartManager()
-        let product1 = Product(id: UUID(), name: "Test Shoe 1", brand: "BrandA", price: 100, imageName: "", isFavorite: false, description: "")
-        let product2 = Product(id: UUID(), name: "Test Shoe 2", brand: "BrandB", price: 200, imageName: "", isFavorite: false, description: "")
+        let product1 = Product(id: UUID(), name: "测试鞋 1", brand: "品牌A", price: 100, imageName: "", isFavorite: false, description: "")
+        let product2 = Product(id: UUID(), name: "测试鞋 2", brand: "品牌B", price: 200, imageName: "", isFavorite: false, description: "")
         cartManager.addToCart(product: product1)
         cartManager.addToCart(product: product2)
         cartManager.addToCart(product: product2)
@@ -52,7 +52,7 @@ final class KixTests: XCTestCase {
 
     func testFavoritesLogic() throws {
         let favoritesManager = FavoritesManager()
-        let product = Product(id: UUID(), name: "Test Shoe", brand: "BrandA", price: 100, imageName: "", isFavorite: false, description: "")
+        let product = Product(id: UUID(), name: "测试鞋", brand: "品牌A", price: 100, imageName: "", isFavorite: false, description: "")
         XCTAssertFalse(favoritesManager.isFavorite(product))
         favoritesManager.toggleFavorite(product)
         XCTAssertTrue(favoritesManager.isFavorite(product))
@@ -62,11 +62,11 @@ final class KixTests: XCTestCase {
 
     func testNotesCRUD() throws {
         let notesManager = NotesManager()
-        notesManager.addNote(text: "First note")
+        notesManager.addNote(text: "第一条笔记")
         XCTAssertEqual(notesManager.notes.count, 1)
         let note = notesManager.notes.first!
-        notesManager.updateNote(note, newText: "Updated note")
-        XCTAssertEqual(notesManager.notes.first?.text, "Updated note")
+        notesManager.updateNote(note, newText: "更新后的笔记")
+        XCTAssertEqual(notesManager.notes.first?.text, "更新后的笔记")
         notesManager.deleteNote(note)
         XCTAssertEqual(notesManager.notes.count, 0)
     }
