@@ -4,6 +4,8 @@ struct HomeView: View {
     @State private var products: [Product] = MockData.products
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var tabSelection: TabSelection
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    @State private var selectedProduct: Product? = nil
     // 品牌渐变（紫色 → 蓝色），卡片中带有微妙的绿色点缀
     let brandGradient = LinearGradient(colors: [.purple, .blue], startPoint: .leading, endPoint: .trailing)
     
@@ -15,7 +17,7 @@ struct HomeView: View {
     @State private var newImageName: String = ""
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color.white.ignoresSafeArea()
                 
@@ -40,32 +42,126 @@ struct HomeView: View {
                     .padding(.top, 20)
                     .padding(.bottom, 15)
 
-                    ScrollView {
-                        // --- 商品列表 ---
-                        LazyVStack(spacing: 25) {
-                            ForEach(products) { product in
-                                NewProductCard(
-                                    product: product,
-                                    onEdit: { updated in
-                                        if let idx = products.firstIndex(where: { $0.id == updated.id }) {
-                                            products[idx] = updated
-                                        }
-                                    },
-                                    onDelete: {
-                                        if let idx = products.firstIndex(where: { $0.id == product.id }) {
-                                            products.remove(at: idx)
+                    GeometryReader { geometry in
+                        let isLandscape = geometry.size.width > geometry.size.height
+                        let isRegular = sizeClass == .regular
+                        let horizontalPadding: CGFloat = 16
+                        let gridSpacing: CGFloat = 16
+
+                        if isRegular && isLandscape {
+                            // 展开态横屏：左右分栏
+                            HStack(spacing: 0) {
+                                ScrollView {
+                                    LazyVStack(spacing: 25) {
+                                        ForEach(products) { product in
+                                            NewProductCard(
+                                                product: product,
+                                                onEdit: { updated in
+                                                    if let idx = products.firstIndex(where: { $0.id == updated.id }) {
+                                                        products[idx] = updated
+                                                    }
+                                                },
+                                                onDelete: {
+                                                    if let idx = products.firstIndex(where: { $0.id == product.id }) {
+                                                        products.remove(at: idx)
+                                                    }
+                                                },
+                                                onCardTap: { selectedProduct = product }
+                                            )
+                                            .padding(.horizontal)
+                                            .accessibilityIdentifier("home_product_card_\(product.id.uuidString)")
+                                            .environmentObject(appState.favoritesManager)
+                                            .environmentObject(appState.cartManager)
+                                            .environmentObject(tabSelection)
                                         }
                                     }
-                                )
-                                .padding(.horizontal)
-                                .accessibilityIdentifier("home_product_card_\(product.id.uuidString)")
-                                .environmentObject(appState.favoritesManager)
-                                .environmentObject(appState.cartManager)
-                                .environmentObject(tabSelection)
+                                    .padding(.top, 10)
+                                    .padding(.bottom, 100)
+                                }
+                                .frame(width: geometry.size.width * 0.45)
+
+                                Divider()
+
+                                // 右侧详情面板
+                                if let product = selectedProduct {
+                                    ProductDetailView(product: product)
+                                        .environmentObject(appState.cartManager)
+                                        .environmentObject(tabSelection)
+                                } else {
+                                    VStack(spacing: 12) {
+                                        Image(systemName: "hand.tap")
+                                            .font(.system(size: 40))
+                                            .foregroundColor(.secondary)
+                                        Text("选择一个商品查看详情")
+                                            .font(.headline)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                }
+                            }
+                        } else if isRegular {
+                            // 展开态竖屏：两列网格
+                            let availableWidth = geometry.size.width - (horizontalPadding * 2)
+                            let totalSpacing = gridSpacing * 1
+                            let cardWidth = (availableWidth - totalSpacing) / 2
+
+                            ScrollView {
+                                LazyVGrid(columns: Array(repeating: GridItem(.fixed(cardWidth), spacing: gridSpacing), count: 2), spacing: 25) {
+                                    ForEach(products) { product in
+                                        NewProductCard(
+                                            product: product,
+                                            onEdit: { updated in
+                                                if let idx = products.firstIndex(where: { $0.id == updated.id }) {
+                                                    products[idx] = updated
+                                                }
+                                            },
+                                            onDelete: {
+                                                if let idx = products.firstIndex(where: { $0.id == product.id }) {
+                                                    products.remove(at: idx)
+                                                }
+                                            }
+                                        )
+                                        .frame(width: cardWidth)
+                                        .accessibilityIdentifier("home_product_card_\(product.id.uuidString)")
+                                        .environmentObject(appState.favoritesManager)
+                                        .environmentObject(appState.cartManager)
+                                        .environmentObject(tabSelection)
+                                    }
+                                }
+                                .padding(.horizontal, horizontalPadding)
+                                .padding(.top, 10)
+                                .padding(.bottom, 100)
+                                .frame(maxWidth: .infinity)
+                            }
+                        } else {
+                            // 折叠态：单列
+                            ScrollView {
+                                LazyVStack(spacing: 25) {
+                                    ForEach(products) { product in
+                                        NewProductCard(
+                                            product: product,
+                                            onEdit: { updated in
+                                                if let idx = products.firstIndex(where: { $0.id == updated.id }) {
+                                                    products[idx] = updated
+                                                }
+                                            },
+                                            onDelete: {
+                                                if let idx = products.firstIndex(where: { $0.id == product.id }) {
+                                                    products.remove(at: idx)
+                                                }
+                                            }
+                                        )
+                                        .padding(.horizontal)
+                                        .accessibilityIdentifier("home_product_card_\(product.id.uuidString)")
+                                        .environmentObject(appState.favoritesManager)
+                                        .environmentObject(appState.cartManager)
+                                        .environmentObject(tabSelection)
+                                    }
+                                }
+                                .padding(.top, 10)
+                                .padding(.bottom, 100) // 为标签栏预留间距
                             }
                         }
-                        .padding(.top, 10)
-                        .padding(.bottom, 100) // 为标签栏预留间距
                     }
                 }
             }
@@ -78,7 +174,7 @@ struct HomeView: View {
 //                }
 //            }
             .sheet(isPresented: $showAddSheet) {
-                NavigationView {
+                NavigationStack {
                     Form {
                         Section(header: Text("名称")) {
                             TextField("例如 Vaporfly 3", text: $newName)
@@ -100,6 +196,7 @@ struct HomeView: View {
                     }
                     .navigationTitle("新增球鞋")
                     .navigationBarTitleDisplayMode(.inline)
+                    .presentationSizing(.form)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("取消") {
@@ -140,6 +237,7 @@ struct NewProductCard: View {
     let product: Product
     var onEdit: (Product) -> Void
     var onDelete: () -> Void
+    var onCardTap: (() -> Void)? = nil
 
     @EnvironmentObject private var favoritesManager: FavoritesManager
     @EnvironmentObject private var cartManager: CartManager
@@ -254,7 +352,11 @@ struct NewProductCard: View {
             withAnimation(.easeInOut(duration: 0.1)) { isPressed = true }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 withAnimation(.easeInOut(duration: 0.1)) { isPressed = false }
-                showDetail = true
+                if let onCardTap {
+                    onCardTap()
+                } else {
+                    showDetail = true
+                }
             }
         }
         .confirmationDialog("操作", isPresented: $showMenu, titleVisibility: .automatic) {
@@ -301,7 +403,7 @@ private struct EditProductSheet: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section(header: Text("名称")) {
                     TextField("名称", text: $name)
@@ -317,6 +419,7 @@ private struct EditProductSheet: View {
             }
             .navigationTitle("编辑球鞋")
             .navigationBarTitleDisplayMode(.inline)
+            .presentationSizing(.form)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("取消") { dismiss() }
