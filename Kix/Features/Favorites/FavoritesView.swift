@@ -4,10 +4,11 @@ struct FavoritesView: View {
     @EnvironmentObject var favoritesManager: FavoritesManager
     @EnvironmentObject var cartManager: CartManager
     @EnvironmentObject var tabSelection: TabSelection
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var selectedProduct: Product? = nil
-    
+
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(alignment: .center, spacing: 0) {
                 // 头部居中，使用渐变效果与首页风格一致
                 Text("收藏")
@@ -40,32 +41,40 @@ struct FavoritesView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding()
                 } else {
-                    ScrollView {
-                        LazyVGrid(columns: [
-                            GridItem(.flexible(), spacing: 12),
-                            GridItem(.flexible(), spacing: 12)
-                        ], spacing: 12) {
-                            ForEach(favoritesManager.favorites) { product in
-                                FavoriteCard(
-                                    product: product,
-                                    onRemove: {
-                                        favoritesManager.toggleFavorite(product)
-                                    },
-                                    onTap: {
-                                        selectedProduct = product
-                                    }
-                                )
+                    GeometryReader { geometry in
+                        let horizontalPadding: CGFloat = 16
+                        let spacing: CGFloat = 12
+                        let columnCount = sizeClass == .regular ? 3 : 2
+                        let availableWidth = geometry.size.width - (horizontalPadding * 2)
+                        let totalSpacing = spacing * CGFloat(columnCount - 1)
+                        let cardWidth = (availableWidth - totalSpacing) / CGFloat(columnCount)
+
+                        ScrollView {
+                            LazyVGrid(columns: Array(repeating: GridItem(.fixed(cardWidth), spacing: spacing), count: columnCount), spacing: 12) {
+                                ForEach(favoritesManager.favorites) { product in
+                                    FavoriteCard(
+                                        product: product,
+                                        cardWidth: cardWidth,
+                                        onRemove: {
+                                            favoritesManager.toggleFavorite(product)
+                                        },
+                                        onTap: {
+                                            selectedProduct = product
+                                        }
+                                    )
+                                }
                             }
+                            .padding(.horizontal, horizontalPadding)
+                            .padding(.top, 16)
+                            .padding(.bottom, 100)
+                            .frame(maxWidth: .infinity)
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 16)
-                        .padding(.bottom, 100)
                     }
                 }
             }
             .navigationBarHidden(true)
             .sheet(item: $selectedProduct) { product in
-                NavigationView {
+                NavigationStack {
                     ProductDetailView(product: product)
                         .environmentObject(favoritesManager)
                         .environmentObject(cartManager)
@@ -79,6 +88,7 @@ struct FavoritesView: View {
 // MARK: - 收藏卡片组件
 struct FavoriteCard: View {
     let product: Product
+    let cardWidth: CGFloat
     var onRemove: () -> Void
     var onTap: () -> Void
     
@@ -99,7 +109,7 @@ struct FavoriteCard: View {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
-                        .frame(height: 140)
+                        .frame(width: cardWidth, height: 140)
                         .clipped()
                         .cornerRadius(16)
                 } else {
@@ -108,8 +118,7 @@ struct FavoriteCard: View {
                             .font(.system(size: 40))
                             .foregroundColor(.gray.opacity(0.35))
                     }
-                    .frame(height: 140)
-                    .frame(maxWidth: .infinity)
+                    .frame(width: cardWidth, height: 140)
                 }
                 
                 // 删除按钮
@@ -153,6 +162,7 @@ struct FavoriteCard: View {
                 onTap()
             }
         }
+        .frame(width: cardWidth)
     }
 }
 
