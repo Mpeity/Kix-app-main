@@ -16,7 +16,7 @@ struct MenuView: View {
     var user: MenuUser = MenuUser(username: "张三", email: "zhangsan@kixapp.com")
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 // 头部样式与首页一致
                 Text("菜单")
