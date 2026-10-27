@@ -15,7 +15,7 @@ struct CartView: View {
     @State private var showNoPaymentAlert = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(alignment: .leading, spacing: 0) {
                 // 头部
                 HStack { Spacer() }
@@ -114,7 +114,7 @@ struct CartView: View {
                                             Text("$\(String(format: "%.2f", item.product.price))")
                                                 .font(.caption)
                                         }
-                                        Spacer()
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                         HStack(spacing: 8) {
                                             Button(action: { cartManager.decreaseQuantity(item: item) }) {
                                                 Image(systemName: "minus.circle.fill")
@@ -139,6 +139,7 @@ struct CartView: View {
                                         }
                                         .accessibilityIdentifier("remove_cart_item_button_\(item.id)")
                                     }
+                                    .frame(maxWidth: .infinity)
                                     .padding(.horizontal)
                                     .padding(.vertical, 8)
                                     .background(Color(.systemBackground))
@@ -218,7 +219,7 @@ struct CartView: View {
                                 .font(.title2).bold()
                                 .accessibilityIdentifier("cart_total_price")
                         }
-                        Button(action: { 
+                        Button(action: {
                             // 检查是否有支付方式
                             if paymentManager.selectedMethod == nil {
                                 showNoPaymentAlert = true
@@ -242,7 +243,7 @@ struct CartView: View {
                             Text("去结算")
                                 .font(.system(size: 18, weight: .bold, design: .rounded))
                                 .kerning(1)
-                                .frame(maxWidth: .infinity)
+                                .frame(maxWidth: AdaptiveLayout.maxButtonWidth)
                                 .padding()
                                 .foregroundColor(.white)
                                 .background(
@@ -251,11 +252,14 @@ struct CartView: View {
                                 .cornerRadius(16)
                                 .shadow(color: .purple.opacity(0.35), radius: 10, y: 6)
                         }
+                        .frame(maxWidth: .infinity)
                         .disabled(selectedItemIDs.isEmpty)
                         .opacity(selectedItemIDs.isEmpty ? 0.6 : 1)
                         .accessibilityIdentifier("checkout_button")
                     }
                     .padding([.horizontal, .bottom])
+                    .frame(maxWidth: AdaptiveLayout.maxContentWidth)
+                    .frame(maxWidth: .infinity)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -277,6 +281,7 @@ struct CartView: View {
                 paymentManager.addTestCard(brand: brand)
             }
             .presentationDetents([.height(300), .medium])
+            .presentationSizing(.form)
         }
         .sheet(isPresented: $showCheckoutProcessing) {
             CheckoutProcessingView()
@@ -362,7 +367,7 @@ struct CheckoutSuccessView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 24) {
                 Spacer()
                 
@@ -415,6 +420,7 @@ struct CheckoutSuccessView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(16)
                 .padding(.horizontal, 32)
+                .frame(maxWidth: AdaptiveLayout.maxContentWidth)
                 
                 Spacer()
                 
@@ -426,7 +432,7 @@ struct CheckoutSuccessView: View {
                     Text("完成")
                         .font(.system(size: 18, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: AdaptiveLayout.maxButtonWidth)
                         .padding()
                         .background(
                             LinearGradient(colors: [.blue, .purple], startPoint: .leading, endPoint: .trailing)
@@ -434,6 +440,7 @@ struct CheckoutSuccessView: View {
                         .cornerRadius(16)
                         .shadow(color: .purple.opacity(0.35), radius: 10, y: 6)
                 }
+                .frame(maxWidth: .infinity)
                 .padding(.horizontal, 32)
                 .padding(.bottom, 32)
             }
@@ -450,7 +457,7 @@ struct AddTestCardSheet: View {
     @State private var selectedBrand: CardBrand = .visa
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 20) {
                 Picker("品牌", selection: $selectedBrand) {
                     ForEach([CardBrand.visa, .masterCard], id: \.id) { brand in
@@ -480,12 +487,13 @@ struct AddTestCardSheet: View {
                     dismiss()
                 } label: {
                     Label("添加测试\(selectedBrand.rawValue)", systemImage: "creditcard.fill")
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: AdaptiveLayout.maxButtonWidth)
                         .padding()
                         .foregroundColor(.white)
                         .background(LinearGradient(colors: [.blue, .purple], startPoint: .leading, endPoint: .trailing))
                         .cornerRadius(16)
                 }
+                .frame(maxWidth: .infinity)
                 .padding()
             }
             .navigationTitle("添加测试卡片")
