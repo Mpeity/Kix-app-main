@@ -7,11 +7,11 @@ struct NotesView: View {
     @State private var selectedNote: Note? = nil
     @State private var showDeleteAlert = false
     @State private var noteToDelete: Note? = nil
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     @EnvironmentObject var tabSelection: TabSelection
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 // 头部标题
                 Text("笔记")
@@ -232,7 +232,7 @@ struct NoteDetailView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(alignment: .leading, spacing: 0) {
                 // 时间戳
                 HStack {
@@ -265,7 +265,7 @@ struct NoteDetailView: View {
                         }
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: AdaptiveLayout.maxButtonWidth)
                         .padding()
                         .background(
                             LinearGradient(colors: [.blue, .purple], startPoint: .leading, endPoint: .trailing)
@@ -280,12 +280,13 @@ struct NoteDetailView: View {
                         }
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.red)
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: AdaptiveLayout.maxButtonWidth)
                         .padding()
                         .background(Color.red.opacity(0.1))
                         .cornerRadius(12)
                     }
                 }
+                .frame(maxWidth: .infinity)
                 .padding()
             }
             .navigationBarTitleDisplayMode(.inline)
