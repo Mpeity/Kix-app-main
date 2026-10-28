@@ -14,21 +14,25 @@ struct NotesView: View {
     
     var body: some View {
         NavigationStack {
-            Group {
-                if #available(iOS 27.1, *) {
-
-                    // 应用内两栏：iOS 27.1 官方分屏容器，只左右分。
-                    // 容器按尺寸类自动排布：compact（普通 iPhone / Duo 外屏）只显示
-                    // primary 单列，regular（Duo 内屏展开 / iPad）左右分栏
-                    ArrangementView {
-                        notesListSection          // primary：笔记列表
-                    } secondary: {
-                        detailSection             // secondary：笔记详情
+            GeometryReader { geometry in
+                let isLandscape = geometry.size.width > geometry.size.height
+                Group {
+                    if #available(iOS 27.1, *), isLandscape && sizeClass == .regular {
+                        // 应用内两栏：iOS 27.1 官方分屏容器，只左右分。
+                        // 仅 Duo 内屏横屏展开（regular + landscape）走分屏；
+                        // ArrangementView 在 iPhone idiom 竖屏下只排 primary，
+                        // 会导致点选 secondary 无反应，故竖屏不走它
+                        ArrangementView {
+                            notesListSection(showsInlineDetail: true)   // primary：笔记列表
+                        } secondary: {
+                            detailSection                               // secondary：笔记详情
+                        }
+                        .arrangementViewStyle(.split.axes(.horizontal))
+                    } else {
+                        // 其余所有形态（Duo 内屏竖屏 / 外屏合盖 / iOS 27.1 以下）：
+                        // 单列，点行走 sheet 弹出详情
+                        notesListSection(showsInlineDetail: false)
                     }
-                    .arrangementViewStyle(.split.axes(.horizontal))
-                } else {
-                    // iOS 27.1 以下：一律单列（点行走 sheet 弹详情）
-                    notesListSection
                 }
             }
             .navigationBarHidden(true)
@@ -62,8 +66,9 @@ struct NotesView: View {
         }
     }
     
-    // MARK: - 左侧笔记列表区域
-    private var notesListSection: some View {
+    // MARK: - 笔记列表区域
+    /// showsInlineDetail: true = 横屏分屏态，点卡片联动右侧详情；false = 点卡片 sheet 弹出详情
+    private func notesListSection(showsInlineDetail: Bool) -> some View {
         VStack(spacing: 0) {
             // 头部标题
             Text("笔记")
@@ -137,7 +142,9 @@ struct NotesView: View {
                             NoteCard(
                                 note: note,
                                 onTap: {
-                                    if sizeClass == .regular {
+                                    // 只有横屏分屏态（secondary 可见）才联动右栏，
+                                    // 其余形态（含 Duo 内屏竖屏）一律 sheet 弹出详情
+                                    if showsInlineDetail {
                                         selectedNoteForDetail = note
                                     } else {
                                         selectedNote = note

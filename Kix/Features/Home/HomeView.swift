@@ -47,120 +47,33 @@ struct HomeView: View {
                         let isRegular = sizeClass == .regular
                         let horizontalPadding: CGFloat = 16
                         let gridSpacing: CGFloat = 16
+                        let availableWidth = geometry.size.width - (horizontalPadding * 2)
+                        let totalSpacing = gridSpacing * 1
+                        let cardWidth = (availableWidth - totalSpacing) / 2
 
-                        if isRegular && isLandscape {
-                            // 展开态横屏：使用 NavigationSplitView
-                            NavigationSplitView(columnVisibility: .constant(.all)) {
-                                // 左侧：商品列表
-                                ScrollView {
-                                    LazyVStack(spacing: 25) {
-                                        ForEach(products) { product in
-                                            NewProductCard(
-                                                product: product,
-                                                onEdit: { updated in
-                                                    if let idx = products.firstIndex(where: { $0.id == updated.id }) {
-                                                        products[idx] = updated
-                                                    }
-                                                },
-                                                onDelete: {
-                                                    if let idx = products.firstIndex(where: { $0.id == product.id }) {
-                                                        products.remove(at: idx)
-                                                    }
-                                                },
-                                                onCardTap: { selectedProduct = product }
-                                            )
-                                            .padding(.horizontal)
-                                            .accessibilityIdentifier("home_product_card_\(product.id.uuidString)")
-                                            .environmentObject(appState.favoritesManager)
-                                            .environmentObject(appState.cartManager)
-                                            .environmentObject(tabSelection)
-                                        }
-                                    }
-                                    .padding(.top, 10)
-                                    .padding(.bottom, 100)
+                        if #available(iOS 27.1, *) {
+                            if isLandscape && isRegular {
+                                // 应用内两栏：iOS 27.1 官方分屏容器，只左右分。
+                                // 仅 Duo 内屏横屏展开（regular + landscape）走分屏
+                                ArrangementView {
+                                    productCardList(allowsInlineDetail: true)
+                                } secondary: {
+                                    homeDetailPane
                                 }
-                                .navigationSplitViewColumnWidth(min: 300, ideal: 400, max: 500)
-                            } detail: {
-                                // 右侧：详情面板
-                                if let product = selectedProduct {
-                                    ProductDetailView(product: product)
-                                        .environmentObject(appState.cartManager)
-                                        .environmentObject(tabSelection)
-                                } else {
-                                    VStack(spacing: 12) {
-                                        Image(systemName: "hand.tap")
-                                            .font(.system(size: 40))
-                                            .foregroundColor(.secondary)
-                                        Text("选择一个商品查看详情")
-                                            .font(.headline)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                }
+                                .arrangementViewStyle(.split.axes(.horizontal))
+                            } else if isRegular {
+                                // Duo 内屏竖屏 / iPad 竖屏：两列网格
+                                twoColumnGrid(cardWidth: cardWidth, gridSpacing: gridSpacing, horizontalPadding: horizontalPadding)
+                            } else {
+                                // 普通 iPhone：单列
+                                productCardList(allowsInlineDetail: false)
                             }
-                            .navigationSplitViewStyle(.balanced)
                         } else if isRegular {
-                            // 展开态竖屏：两列网格
-                            let availableWidth = geometry.size.width - (horizontalPadding * 2)
-                            let totalSpacing = gridSpacing * 1
-                            let cardWidth = (availableWidth - totalSpacing) / 2
-
-                            ScrollView {
-                                LazyVGrid(columns: Array(repeating: GridItem(.fixed(cardWidth), spacing: gridSpacing), count: 2), spacing: 25) {
-                                    ForEach(products) { product in
-                                        NewProductCard(
-                                            product: product,
-                                            onEdit: { updated in
-                                                if let idx = products.firstIndex(where: { $0.id == updated.id }) {
-                                                    products[idx] = updated
-                                                }
-                                            },
-                                            onDelete: {
-                                                if let idx = products.firstIndex(where: { $0.id == product.id }) {
-                                                    products.remove(at: idx)
-                                                }
-                                            }
-                                        )
-                                        .frame(width: cardWidth)
-                                        .accessibilityIdentifier("home_product_card_\(product.id.uuidString)")
-                                        .environmentObject(appState.favoritesManager)
-                                        .environmentObject(appState.cartManager)
-                                        .environmentObject(tabSelection)
-                                    }
-                                }
-                                .padding(.horizontal, horizontalPadding)
-                                .padding(.top, 10)
-                                .padding(.bottom, 100)
-                                .frame(maxWidth: .infinity)
-                            }
+                            // iOS 27.1 以下展开态：两列网格
+                            twoColumnGrid(cardWidth: cardWidth, gridSpacing: gridSpacing, horizontalPadding: horizontalPadding)
                         } else {
-                            // 折叠态：单列
-                            ScrollView {
-                                LazyVStack(spacing: 25) {
-                                    ForEach(products) { product in
-                                        NewProductCard(
-                                            product: product,
-                                            onEdit: { updated in
-                                                if let idx = products.firstIndex(where: { $0.id == updated.id }) {
-                                                    products[idx] = updated
-                                                }
-                                            },
-                                            onDelete: {
-                                                if let idx = products.firstIndex(where: { $0.id == product.id }) {
-                                                    products.remove(at: idx)
-                                                }
-                                            }
-                                        )
-                                        .padding(.horizontal)
-                                        .accessibilityIdentifier("home_product_card_\(product.id.uuidString)")
-                                        .environmentObject(appState.favoritesManager)
-                                        .environmentObject(appState.cartManager)
-                                        .environmentObject(tabSelection)
-                                    }
-                                }
-                                .padding(.top, 10)
-                                .padding(.bottom, 100) // 为标签栏预留间距
-                            }
+                            // iOS 27.1 以下折叠态：单列
+                            productCardList(allowsInlineDetail: false)
                         }
                     }
                 }
@@ -228,6 +141,90 @@ struct HomeView: View {
                     }
                 }
             }
+        }
+    }
+
+    // MARK: - 两列网格（展开态竖屏）
+    private func twoColumnGrid(cardWidth: CGFloat, gridSpacing: CGFloat, horizontalPadding: CGFloat) -> some View {
+        ScrollView {
+            LazyVGrid(columns: Array(repeating: GridItem(.fixed(cardWidth), spacing: gridSpacing), count: 2), spacing: 25) {
+                ForEach(products) { product in
+                    NewProductCard(
+                        product: product,
+                        onEdit: { updated in
+                            if let idx = products.firstIndex(where: { $0.id == updated.id }) {
+                                products[idx] = updated
+                            }
+                        },
+                        onDelete: {
+                            if let idx = products.firstIndex(where: { $0.id == product.id }) {
+                                products.remove(at: idx)
+                            }
+                        }
+                    )
+                    .frame(width: cardWidth)
+                    .accessibilityIdentifier("home_product_card_\(product.id.uuidString)")
+                    .environmentObject(appState.favoritesManager)
+                    .environmentObject(appState.cartManager)
+                    .environmentObject(tabSelection)
+                }
+            }
+            .padding(.horizontal, horizontalPadding)
+            .padding(.top, 10)
+            .padding(.bottom, 100)
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    // MARK: - 商品卡片列表（ArrangementView primary / 单列共用）
+    private func productCardList(allowsInlineDetail: Bool) -> some View {
+        ScrollView {
+            LazyVStack(spacing: 25) {
+                ForEach(products) { product in
+                    NewProductCard(
+                        product: product,
+                        onEdit: { updated in
+                            if let idx = products.firstIndex(where: { $0.id == updated.id }) {
+                                products[idx] = updated
+                            }
+                        },
+                        onDelete: {
+                            if let idx = products.firstIndex(where: { $0.id == product.id }) {
+                                products.remove(at: idx)
+                            }
+                        },
+                        // regular：点卡片联动 secondary 详情；compact：走卡片内置 sheet
+                        onCardTap: allowsInlineDetail && sizeClass == .regular ? { selectedProduct = product } : nil
+                    )
+                    .padding(.horizontal)
+                    .accessibilityIdentifier("home_product_card_\(product.id.uuidString)")
+                    .environmentObject(appState.favoritesManager)
+                    .environmentObject(appState.cartManager)
+                    .environmentObject(tabSelection)
+                }
+            }
+            .padding(.top, 10)
+            .padding(.bottom, 100) // 为标签栏预留间距
+        }
+    }
+
+    // MARK: - 详情面板（ArrangementView secondary）
+    @ViewBuilder
+    private var homeDetailPane: some View {
+        if let product = selectedProduct {
+            ProductDetailView(product: product)
+                .environmentObject(appState.cartManager)
+                .environmentObject(tabSelection)
+        } else {
+            VStack(spacing: 12) {
+                Image(systemName: "hand.tap")
+                    .font(.system(size: 40))
+                    .foregroundColor(.secondary)
+                Text("选择一个商品查看详情")
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }
