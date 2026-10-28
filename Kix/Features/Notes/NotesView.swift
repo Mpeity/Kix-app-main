@@ -15,20 +15,19 @@ struct NotesView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if sizeClass == .regular {
-                    // 展开态：左右分栏
-                    HStack(spacing: 0) {
-                        // 左侧：原有布局
-                        notesListSection
-                            .frame(maxWidth: 350)
-                        
-                        Divider()
-                        
-                        // 右侧：详情区域
-                        detailSection
+                if #available(iOS 27.1, *) {
+
+                    // 应用内两栏：iOS 27.1 官方分屏容器，只左右分。
+                    // 容器按尺寸类自动排布：compact（普通 iPhone / Duo 外屏）只显示
+                    // primary 单列，regular（Duo 内屏展开 / iPad）左右分栏
+                    ArrangementView {
+                        notesListSection          // primary：笔记列表
+                    } secondary: {
+                        detailSection             // secondary：笔记详情
                     }
+                    .arrangementViewStyle(.split.axes(.horizontal))
                 } else {
-                    // 折叠态：原有单列布局
+                    // iOS 27.1 以下：一律单列（点行走 sheet 弹详情）
                     notesListSection
                 }
             }
