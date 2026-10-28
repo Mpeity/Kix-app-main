@@ -49,8 +49,9 @@ struct HomeView: View {
                         let gridSpacing: CGFloat = 16
 
                         if isRegular && isLandscape {
-                            // 展开态横屏：左右分栏
-                            HStack(spacing: 0) {
+                            // 展开态横屏：使用 NavigationSplitView
+                            NavigationSplitView(columnVisibility: .constant(.all)) {
+                                // 左侧：商品列表
                                 ScrollView {
                                     LazyVStack(spacing: 25) {
                                         ForEach(products) { product in
@@ -78,11 +79,9 @@ struct HomeView: View {
                                     .padding(.top, 10)
                                     .padding(.bottom, 100)
                                 }
-                                .frame(width: geometry.size.width * 0.45)
-
-                                Divider()
-
-                                // 右侧详情面板
+                                .navigationSplitViewColumnWidth(min: 300, ideal: 400, max: 500)
+                            } detail: {
+                                // 右侧：详情面板
                                 if let product = selectedProduct {
                                     ProductDetailView(product: product)
                                         .environmentObject(appState.cartManager)
@@ -99,6 +98,7 @@ struct HomeView: View {
                                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 }
                             }
+                            .navigationSplitViewStyle(.balanced)
                         } else if isRegular {
                             // 展开态竖屏：两列网格
                             let availableWidth = geometry.size.width - (horizontalPadding * 2)
